@@ -2,8 +2,9 @@
 
 open System.Collections.Immutable
 
+[<RequireQualifiedAccess>]
 type Trigger =
-    | OnPushTrigger of string[]
+    | OnPush of string[]
 
 type Job = {
     Id: string
@@ -48,11 +49,9 @@ let workflow (name: string) (commands: WorkflowCreationCommand seq): Workflow =
             | AddJob (id, jobCommands) -> addJob wf id jobCommands
     wf
 
-let internal Stringify(wf: Workflow): string = ""
-
 type Library =
-    static member onPush(branchName: string): WorkflowCreationCommand =
-        AddTrigger(OnPushTrigger [| branchName |])
+    static member onPushTo(branchName: string): WorkflowCreationCommand =
+        AddTrigger(Trigger.OnPush [| branchName |])
     static member job (id: string) (commands: JobCreationCommand seq): WorkflowCreationCommand =
         AddJob(id, commands)
 
