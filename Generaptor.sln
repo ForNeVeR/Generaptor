@@ -19,6 +19,15 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GitHubActions", "GitHubActi
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Tests", "Generaptor.Tests\Generaptor.Tests.fsproj", "{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{3AB1C8E3-61F0-437B-9BE5-B7098E7EFF2E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{38B19542-0515-4A04-89E9-27D8375303BD}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\main.yml = .github\workflows\main.yml
+	EndProjectSection
+EndProject
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Library", "Generaptor.Library\Generaptor.Library.fsproj", "{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -40,8 +49,13 @@ Global
 		{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{B1CF5868-2797-46C1-8ADD-E76D46127842} = {FC1DB59B-C7D2-4D7B-BBD9-8183E2317EA1}
+		{38B19542-0515-4A04-89E9-27D8375303BD} = {3AB1C8E3-61F0-437B-9BE5-B7098E7EFF2E}
 	EndGlobalSection
 EndGlobal

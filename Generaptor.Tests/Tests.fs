@@ -4,11 +4,12 @@ open Xunit
 
 open Generaptor
 open Generaptor.GitHubActions
-open type Generaptor.GitHubActions.Library
+open type Generaptor.GitHubActions.Commands
 
 [<Fact>]
 let ``Basic workflow gets generated``(): unit =
     let wf = workflow("wf") [|
+        name "Main"
         onPushTo "main"
 
         job "main" [|
@@ -16,7 +17,7 @@ let ``Basic workflow gets generated``(): unit =
             step(uses = "actions/checkout@v4")
         |]
     |]
-    let expected = """name: wf
+    let expected = """name: Main
 on:
   push:
     branches:
@@ -27,4 +28,4 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 """
-    Assert.Equal(expected.ReplaceLineEndings @"\n", Serializers.Stringify wf)
+    Assert.Equal(expected.ReplaceLineEndings "\n", Serializers.Stringify wf)
