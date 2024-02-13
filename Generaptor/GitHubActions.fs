@@ -3,11 +3,26 @@
 open System
 open System.Collections.Immutable
 
-[<RequireQualifiedAccess>]
-type Trigger =
-    | OnPush of string[]
-    | OnPullRequest of string[]
+type Triggers = {
+    Push: PushTrigger
+    PullRequest: PullRequestTrigger
+    Schedule: string option
+    WorkflowDispatch: bool
+}
+and PushTrigger = {
+    Branches: ImmutableArray<string>
+    Tags: ImmutableArray<string>
+}
+and PullRequestTrigger = {
+    Branches: ImmutableArray<string>
+}
+
+type TriggerCreationCommand =
+    | OnPushBranches of string seq
+    | OnPushTags of string seq
+    | OnPullRequestToBranches of string seq
     | OnSchedule of string
+    | OnWorkflowDispatch
 
 type Job = {
     Id: string
@@ -31,7 +46,7 @@ and Step = {
 type Workflow = {
     Id: string
     Name: string option
-    Triggers: ImmutableArray<Trigger>
+    Triggers: Triggers
     Jobs: ImmutableArray<Job>
 }
 
@@ -42,11 +57,16 @@ type JobCreationCommand =
 
 type WorkflowCreationCommand =
     | SetName of string
-    | AddTrigger of Trigger
+    | AddTrigger of TriggerCreationCommand
     | AddJob of Job
 
-let private addTrigger wf trigger =
-    { wf with Triggers = wf.Triggers.Add(trigger) }
+let private addTrigger wf = function
+    | OnPushBranches branches -> { wf with Workflow.Triggers.Push.Branches = wf.Triggers.Push.Branches.AddRange(branches) }
+    | OnPushTags tags -> { wf with Workflow.Triggers.Push.Tags = wf.Triggers.Push.Tags.AddRange(tags) }
+    | OnPullRequestToBranches branches -> { wf with Workflow.Triggers.PullRequest.Branches = wf.Triggers.PullRequest.Branches.AddRange(branches) }
+    | OnSchedule cron -> { wf with Workflow.Triggers.Schedule = Some cron }
+    | OnWorkflowDispatch -> { wf with Workflow.Triggers.WorkflowDispatch = true }
+
 let private createJob id commands =
     let mutable job = { Id = id; Strategy = None; RunsOn = None; Environment = Map.empty; Steps = ImmutableArray.Empty }
     for command in commands do
@@ -58,7 +78,22 @@ let private createJob id commands =
     job
 
 let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
-    let mutable wf = { Id = id; Name = None; Triggers = ImmutableArray.Empty; Jobs = ImmutableArray.Empty }
+    let mutable wf = {
+        Id = id
+        Name = None
+        Triggers = {
+            Push = {
+                Branches = ImmutableArray.Empty
+                Tags = ImmutableArray.Empty
+            }
+            PullRequest = {
+                Branches = ImmutableArray.Empty
+            }
+            Schedule = None
+            WorkflowDispatch = false
+        }
+        Jobs = ImmutableArray.Empty
+    }
     for command in commands do
         wf <-
             match command with
@@ -72,13 +107,17 @@ type Commands =
         SetName name
 
     static member onPushTo(branchName: string): WorkflowCreationCommand =
-        AddTrigger(Trigger.OnPush [| branchName |])
+        AddTrigger(OnPushBranches [| branchName |])
+    static member onPushTags(tagName: string): WorkflowCreationCommand=
+        AddTrigger(OnPushTags [| tagName |])
     static member onPullRequestTo(branchName: string): WorkflowCreationCommand =
-        AddTrigger(Trigger.OnPullRequest [| branchName |])
+        AddTrigger(OnPullRequestToBranches [| branchName |])
     static member onSchedule(cron: string): WorkflowCreationCommand =
-        AddTrigger(Trigger.OnSchedule cron)
+        AddTrigger(OnSchedule cron)
     static member onSchedule(day: DayOfWeek): WorkflowCreationCommand =
-        AddTrigger(Trigger.OnSchedule $"0 0 * * {int day}")
+        AddTrigger(OnSchedule $"0 0 * * {int day}")
+    static member onWorkflowDispatch: WorkflowCreationCommand =
+        AddTrigger OnWorkflowDispatch
 
     static member job (id: string) (commands: JobCreationCommand seq): WorkflowCreationCommand =
         AddJob(createJob id commands)

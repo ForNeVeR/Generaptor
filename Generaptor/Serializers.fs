@@ -6,13 +6,26 @@ open YamlDotNet.Serialization
 
 open Generaptor.GitHubActions
 
-let private convertTriggers (triggers: Trigger seq) =
+let private convertTriggers(triggers: Triggers) =
     let map = Dictionary<string, obj>()
-    for trigger in triggers do
-        match trigger with
-        | Trigger.OnPush branches -> map.Add("push", Map.ofArray [| "branches", branches |])
-        | Trigger.OnPullRequest branches -> map.Add("pull_request", Map.ofArray [| "branches", branches |])
-        | Trigger.OnSchedule cron -> map.Add("schedule", [ Map.ofArray [| "cron", cron |] ])
+
+    let push = triggers.Push
+    if push.Branches.Length > 0 || push.Tags.Length > 0 then
+        map.Add("push", Map.ofArray [|
+            if push.Branches.Length > 0 then
+                "branches", push.Branches
+            if push.Tags.Length > 0 then
+                "tags", push.Tags
+        |])
+    if triggers.PullRequest.Branches.Length > 0 then
+        map.Add("pull_request", Map.ofArray [| "branches", triggers.PullRequest.Branches |])
+    match triggers.Schedule with
+    | None -> ()
+    | Some cron -> map.Add("schedule", Map.ofArray [| "cron", cron |])
+
+    if triggers.WorkflowDispatch then
+        map.Add("workflow_dispatch", null)
+
     map
 
 let private addOptional (map: Dictionary<string, obj>) (key: string) value =

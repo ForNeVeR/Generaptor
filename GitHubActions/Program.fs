@@ -14,15 +14,57 @@ let images = [
 ]
 
 let workflows = [
-    workflow("main") [
-        name "Main"
+    let mainTriggers = [
         onPushTo mainBranch
         onPullRequestTo mainBranch
         onSchedule(day = DayOfWeek.Saturday)
+        onWorkflowDispatch
+    ]
+
+    workflow "main" [
+        name "Main"
+        yield! mainTriggers
         job "main" [
             checkout
             yield! dotNetBuildAndTest()
         ] |> addMatrix images
+    ]
+    workflow "release" [
+        name "Release"
+        yield! mainTriggers
+        onPushTags "v*"
+        job "nuget" [
+            checkout
+
+            let configuration = "Release"
+
+            let versionStepId = "version"
+            let versionField = "${{ steps." + versionStepId + ".outputs.version }}"
+            getVersionWithScript versionStepId "Scripts/Get-Version.ps1"
+            dotNetPack(version = versionStepId)
+
+            let releaseNotes = "./release-notes.md"
+            prepareChangelog(releaseNotes)
+            let artifacts projectName includeSNuPkg = [
+                $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.nupkg"
+                if includeSNuPkg then $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.snupkg"
+            ]
+            uploadArtifacts [
+                releaseNotes
+                yield! artifacts "Generaptor" true
+                yield! artifacts "Generaptor.Library" true
+            ]
+            ifCalledOnTagPush [
+                createRelease(
+                    name = $"Generaptor {versionField}",
+                    releaseNotes = releaseNotes
+                )
+                pushToNuGetOrg "NUGET_TOKEN" [
+                    yield! artifacts "Generaptor" false
+                    yield! artifacts "Generaptor.Library" false
+                ]
+            ]
+        ]
     ]
 ]
 
