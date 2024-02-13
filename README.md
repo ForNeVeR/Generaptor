@@ -4,7 +4,7 @@
 Generaptor helps you to maintain GitHub actions for your project. It can generate the YAML files and verify that they are correct, according to your specification.
 
 Now you can manage your action definitions via NuGet packages, and port the whole workflows between repositories.
-A bit of strong typing will also help top avoid mistakes!
+A bit of strong typing will also help to avoid mistakes!
 
 Showcase
 --------
