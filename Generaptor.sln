@@ -10,6 +10,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		LICENSE.md = LICENSE.md
 		README.md = README.md
 		CODE_OF_CONDUCT.md = CODE_OF_CONDUCT.md
+		MAINTAINERSHIP.md = MAINTAINERSHIP.md
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor", "Generaptor\Generaptor.fsproj", "{DECF408B-82A4-4EF2-971E-56840AA72F6D}"
