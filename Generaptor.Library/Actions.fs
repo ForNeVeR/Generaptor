@@ -2,4 +2,4 @@
 
 open type Generaptor.GitHubActions.Commands
 
-let checkout = step(uses = "checkout@v4")
+let checkout = step(uses = "actions/checkout@v4")
