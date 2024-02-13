@@ -79,7 +79,9 @@ jobs:
 Documentation
 -------------
 - [License (MIT)][docs.license]
+- [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-zero-
+[docs.code-of-conduct]: ./CODE_OF_CONDUCT.md
 [docs.license]: ./LICENSE.md
 [status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
