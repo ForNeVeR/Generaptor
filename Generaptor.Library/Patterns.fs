@@ -28,7 +28,7 @@ type Patterns =
                 |> String.concat ", "
             step(
                 name = "NuGet cache",
-                run = "actions/cache@v4",
+                uses = "actions/cache@v4",
                 options = Map.ofList [
                     "path", "${{ env.NUGET_PACKAGES }}"
                     "key", "${{ runner.os }}.nuget.${{ hashFiles(" + hashFiles + ") }}"

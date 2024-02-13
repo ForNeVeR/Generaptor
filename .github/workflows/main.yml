@@ -30,7 +30,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: NuGet cache
-      run: actions/cache@v4
+      uses: actions/cache@v4
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
         path: ${{ env.NUGET_PACKAGES }}
