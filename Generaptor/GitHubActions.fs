@@ -36,8 +36,10 @@ and Strategy = {
     FailFast: bool
 }
 and Step = {
+    Id: string option
     Name: string option
     UsesAction: string option
+    Shell: string option
     Run: string option
     Options: Map<string, string>
     TimeoutMin: int option
@@ -126,10 +128,18 @@ type Commands =
         RunsOn image
     static member setEnv (key: string) (value: string): JobCreationCommand =
         SetEnv(key, value)
-    static member step(?name: string, ?uses: string, ?run: string, ?options: Map<string, string>, ?timeoutMin: int): JobCreationCommand =
+    static member step(?id: string,
+                       ?name: string,
+                       ?uses: string,
+                       ?shell: string,
+                       ?run: string,
+                       ?options: Map<string, string>,
+                       ?timeoutMin: int): JobCreationCommand =
         AddStep {
+            Id = id
             Name = name
             UsesAction = uses
+            Shell = shell
             Run = run
             Options = defaultArg options Map.empty
             TimeoutMin = timeoutMin

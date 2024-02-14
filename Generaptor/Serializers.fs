@@ -36,8 +36,10 @@ let private addOptional (map: Dictionary<string, obj>) (key: string) value =
 let private convertSteps steps =
     steps |> Seq.map (fun (step: Step) ->
         let map = Dictionary()
+        addOptional map "id" step.Id
         addOptional map "name" step.Name
         addOptional map "uses" step.UsesAction
+        addOptional map "shell" step.Shell
         addOptional map "run" step.Run
         if not <| Map.isEmpty step.Options then
             map.Add("with", step.Options)

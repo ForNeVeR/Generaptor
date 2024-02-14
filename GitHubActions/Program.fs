@@ -3,7 +3,7 @@
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
-open Generaptor.Library.Actions
+open type Generaptor.Library.Actions
 open type Generaptor.Library.Patterns
 
 let mainBranch = "main"
@@ -40,7 +40,7 @@ let workflows = [
 
             let versionStepId = "version"
             let versionField = "${{ steps." + versionStepId + ".outputs.version }}"
-            getVersionWithScript versionStepId "Scripts/Get-Version.ps1"
+            getVersionWithScript(stepId = versionStepId, scriptPath = "Scripts/Get-Version.ps1")
             dotNetPack(version = versionStepId)
 
             let releaseNotes = "./release-notes.md"

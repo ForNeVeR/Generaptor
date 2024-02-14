@@ -7,6 +7,15 @@ open type GitHubActions.Commands
 #nowarn "25"
 
 type Patterns =
+    static member addMatrix (images: string seq) (AddJob job): WorkflowCreationCommand =
+        AddJob { job with
+                   RunsOn = Some "${{ matrix.image }}"
+                   Strategy = Some {
+                       Matrix = Map.ofSeq [ "image", images ]
+                       FailFast = false
+                   }
+               }
+
     static member dotNetBuildAndTest(?sdkVersion: string, ?projectFileExtensions: string seq): JobCreationCommand seq =
         let sdkVersion = defaultArg sdkVersion "8.0.x"
         let projectFileExtensions = defaultArg projectFileExtensions [ ".fsproj" ]
@@ -44,12 +53,3 @@ type Patterns =
                 timeoutMin = 10
             )
         ]
-
-    static member addMatrix (images: string seq) (AddJob job): WorkflowCreationCommand =
-        AddJob { job with
-                   RunsOn = Some "${{ matrix.image }}"
-                   Strategy = Some {
-                       Matrix = Map.ofSeq [ "image", images ]
-                       FailFast = false
-                   }
-               }
