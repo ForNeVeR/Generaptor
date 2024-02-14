@@ -36,6 +36,7 @@ and Strategy = {
     FailFast: bool
 }
 and Step = {
+    Condition: string option
     Id: string option
     Name: string option
     UsesAction: string option
@@ -136,6 +137,7 @@ type Commands =
                        ?options: Map<string, string>,
                        ?timeoutMin: int): JobCreationCommand =
         AddStep {
+            Condition = None
             Id = id
             Name = name
             UsesAction = uses

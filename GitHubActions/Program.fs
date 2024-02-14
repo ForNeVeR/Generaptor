@@ -49,17 +49,21 @@ let workflows = [
                 $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.nupkg"
                 if includeSNuPkg then $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.snupkg"
             ]
-            uploadArtifacts [
-                releaseNotes
+            let allArtifacts = [
                 yield! artifacts "Generaptor" true
                 yield! artifacts "Generaptor.Library" true
             ]
-            ifCalledOnTagPush [
+            uploadArtifacts [
+                releaseNotes
+                yield! allArtifacts
+            ]
+            yield! ifCalledOnTagPush [
                 createRelease(
                     name = $"Generaptor {versionField}",
-                    releaseNotes = releaseNotes
+                    releaseNotesPath = releaseNotes,
+                    files = allArtifacts
                 )
-                pushToNuGetOrg "NUGET_TOKEN" [
+                yield! pushToNuGetOrg "NUGET_TOKEN" [
                     yield! artifacts "Generaptor" false
                     yield! artifacts "Generaptor.Library" false
                 ]

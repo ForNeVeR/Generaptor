@@ -1,0 +1,57 @@
+# This file is auto-generated.
+name: Release
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - v*
+  pull_request:
+    branches:
+    - main
+  schedule:
+    cron: 0 0 * * 6
+  workflow_dispatch: 
+jobs:
+  nuget:
+    steps:
+    - uses: actions/checkout@v4
+    - id: version
+      name: Get version
+      shell: pwsh
+      run: Scripts/Get-Version.ps1
+    - run: dotnet pack XamlMath.All.sln --configuration Release -p:Version=version
+    - name: Read changelog
+      uses: ForNeVeR/ChangelogAutomation.action@v1
+      with:
+        outputPath: ./release-notes.md
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        path: >-
+          ./release-notes.md
+
+          ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg
+
+          ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.snupkg
+
+          ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg
+
+          ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg
+    - name: Create a release
+      uses: softprops/action-gh-release@v1
+      with:
+        body_path: ./release-notes.md
+        files: >-
+          ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg
+
+          ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.snupkg
+
+          ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg
+
+          ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg
+        name: Generaptor ${{ steps.version.outputs.version }}
+    - name: Push to NuGet
+      run: dotnet nuget push ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${ secrets.NUGET_TOKEN }}
+    - name: Push to NuGet
+      run: dotnet nuget push ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${ secrets.NUGET_TOKEN }}

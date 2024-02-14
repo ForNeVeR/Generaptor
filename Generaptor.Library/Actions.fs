@@ -36,3 +36,22 @@ type Actions =
                 "path", String.concat "\n" artifacts
             ]
         )
+
+    static member createRelease(name: string, releaseNotesPath: string, files: string seq): JobCreationCommand =
+        step(
+            name = "Create a release",
+            uses = "softprops/action-gh-release@v1",
+            options = Map.ofList [
+                "name", name
+                "body_path", releaseNotesPath
+                "files", String.concat "\n" files
+            ]
+        )
+
+    static member pushToNuGetOrg (nuGetApiKeyId: string) (artifacts: string seq): JobCreationCommand seq =
+        artifacts |> Seq.map (fun artifact ->
+            step(
+                name = "Push to NuGet",
+                run = $"dotnet nuget push {artifact} --source https://api.nuget.org/v3/index.json --api-key ${{ secrets." + nuGetApiKeyId + " }}"
+            )
+        )

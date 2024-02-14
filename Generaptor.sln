@@ -27,6 +27,7 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{38B19542-0515-4A04-89E9-27D8375303BD}"
 	ProjectSection(SolutionItems) = preProject
 		.github\workflows\main.yml = .github\workflows\main.yml
+		.github\workflows\release.yml = .github\workflows\release.yml
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Library", "Generaptor.Library\Generaptor.Library.fsproj", "{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}"

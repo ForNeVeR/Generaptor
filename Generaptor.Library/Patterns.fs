@@ -53,3 +53,15 @@ type Patterns =
                 timeoutMin = 10
             )
         ]
+
+    static member ifCalledOnTagPush(steps: JobCreationCommand seq): JobCreationCommand seq =
+        steps |>
+        Seq.map(
+            function
+            | AddStep ({ Condition = None } as step) ->
+                AddStep { step with
+                            Condition = Some "startsWith(github.ref, 'refs/tags/v')"
+                        }
+            | AddStep step -> failwith $"Step {step} has a condition already."
+            | x -> x
+        )
