@@ -32,6 +32,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Library", "Generaptor.Library\Generaptor.Library.fsproj", "{D814D8A7-76C1-43E9-931F-4A9F4CBAAED6}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{21699C58-41F1-459C-B993-A2F83846F62A}"
+	ProjectSection(SolutionItems) = preProject
+		Scripts\Get-Version.ps1 = Scripts\Get-Version.ps1
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
