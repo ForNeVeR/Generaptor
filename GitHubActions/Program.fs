@@ -43,7 +43,7 @@ let workflows = [
             let versionStepId = "version"
             let versionField = "${{ steps." + versionStepId + ".outputs.version }}"
             getVersionWithScript(stepId = versionStepId, scriptPath = "Scripts/Get-Version.ps1")
-            dotNetPack(version = versionStepId)
+            dotNetPack(version = versionField)
 
             let releaseNotes = "./release-notes.md"
             prepareChangelog(releaseNotes)
