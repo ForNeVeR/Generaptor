@@ -39,7 +39,8 @@ jobs:
           ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg
 
           ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg
-    - name: Create a release
+    - if: startsWith(github.ref, 'refs/tags/v')
+      name: Create a release
       uses: softprops/action-gh-release@v1
       with:
         body_path: ./release-notes.md
@@ -52,7 +53,9 @@ jobs:
 
           ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg
         name: Generaptor ${{ steps.version.outputs.version }}
-    - name: Push to NuGet
+    - if: startsWith(github.ref, 'refs/tags/v')
+      name: Push to NuGet
       run: dotnet nuget push ./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${ secrets.NUGET_TOKEN }}
-    - name: Push to NuGet
+    - if: startsWith(github.ref, 'refs/tags/v')
+      name: Push to NuGet
       run: dotnet nuget push ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg --source https://api.nuget.org/v3/index.json --api-key ${ secrets.NUGET_TOKEN }}
