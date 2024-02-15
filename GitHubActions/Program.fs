@@ -7,9 +7,10 @@ open type Generaptor.Library.Actions
 open type Generaptor.Library.Patterns
 
 let mainBranch = "main"
+let linuxImage = "ubuntu-22.04"
 let images = [
     "macos-12"
-    "ubuntu-22.04"
+    linuxImage
     "windows-2022"
 ]
 
@@ -34,6 +35,7 @@ let workflows = [
         yield! mainTriggers
         onPushTags "v*"
         job "nuget" [
+            runsOn linuxImage
             checkout
 
             let configuration = "Release"

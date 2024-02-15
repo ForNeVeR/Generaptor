@@ -16,7 +16,7 @@ type Actions =
             id = stepId,
             name = "Get version",
             shell = "pwsh",
-            run = scriptPath
+            run = $"""echo "version=$({scriptPath} -RefName $env:GITHUB_REF)" >> $env:GITHUB_OUTPUT"""
         )
 
     static member prepareChangelog(outputPath: string): JobCreationCommand =
@@ -24,7 +24,7 @@ type Actions =
             name = "Read changelog",
             uses = "ForNeVeR/ChangelogAutomation.action@v1",
             options = Map.ofList [
-                "outputPath", outputPath
+                "output", outputPath
             ]
         )
 

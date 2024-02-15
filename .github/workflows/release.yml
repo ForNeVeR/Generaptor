@@ -10,21 +10,22 @@ on:
     branches:
     - main
   schedule:
-    cron: 0 0 * * 6
+  - cron: 0 0 * * 6
   workflow_dispatch: 
 jobs:
   nuget:
+    runs-on: ubuntu-22.04
     steps:
     - uses: actions/checkout@v4
     - id: version
       name: Get version
       shell: pwsh
-      run: Scripts/Get-Version.ps1
+      run: echo "version=$(Scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)" >> $env:GITHUB_OUTPUT
     - run: dotnet pack XamlMath.All.sln --configuration Release -p:Version=version
     - name: Read changelog
       uses: ForNeVeR/ChangelogAutomation.action@v1
       with:
-        outputPath: ./release-notes.md
+        output: ./release-notes.md
     - name: Upload artifacts
       uses: actions/upload-artifact@v3
       with:

@@ -21,7 +21,7 @@ let private convertTriggers(triggers: Triggers) =
         map.Add("pull_request", Map.ofArray [| "branches", triggers.PullRequest.Branches |])
     match triggers.Schedule with
     | None -> ()
-    | Some cron -> map.Add("schedule", Map.ofArray [| "cron", cron |])
+    | Some cron -> map.Add("schedule", [| Map.ofArray [| "cron", cron |] |])
 
     if triggers.WorkflowDispatch then
         map.Add("workflow_dispatch", null)
