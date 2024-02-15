@@ -14,4 +14,7 @@
 
         <PackageReadmeFile>README.md</PackageReadmeFile>
     </PropertyGroup>
+    <ItemGroup Label="Packaging" Condition=" $(IsPackable) == 'true' ">
+        <None Include="..\README.md" Pack="true" PackagePath="\"/>
+    </ItemGroup>
 </Project>

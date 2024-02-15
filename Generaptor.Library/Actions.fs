@@ -8,7 +8,7 @@ type Actions =
 
     static member dotNetPack(version: string): JobCreationCommand =
         step(
-            run = $"dotnet pack XamlMath.All.sln --configuration Release -p:Version={version}"
+            run = $"dotnet pack --configuration Release -p:Version={version}"
         )
 
     static member getVersionWithScript(stepId: string, scriptPath: string): JobCreationCommand =
