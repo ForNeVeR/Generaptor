@@ -2,9 +2,11 @@
 
 open System.Collections.Generic
 
+open YamlDotNet.Core
 open YamlDotNet.Serialization
 
 open Generaptor.GitHubActions
+open YamlDotNet.Serialization.EventEmitters
 
 let private convertTriggers(triggers: Triggers) =
     let map = Dictionary<string, obj>()
@@ -84,6 +86,14 @@ let Stringify(wf: Workflow): string =
     let serializer =
         SerializerBuilder()
             .WithNewLine("\n")
+            .WithEventEmitter(fun nextEmitter ->
+                { new ChainedEventEmitter(nextEmitter) with
+                    override this.Emit(eventInfo: ScalarEventInfo, emitter: IEmitter): unit =
+                        if eventInfo.Source.Type = typeof<string>
+                           && (eventInfo.Source.Value :?> string).Contains "\n" then
+                            eventInfo.Style <- ScalarStyle.Literal
+                        nextEmitter.Emit(eventInfo, emitter)
+                })
             .Build()
     let data = convertWorkflow wf
     serializer.Serialize data
