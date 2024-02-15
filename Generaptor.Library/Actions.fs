@@ -51,7 +51,7 @@ type Actions =
     static member pushToNuGetOrg (nuGetApiKeyId: string) (artifacts: string seq): JobCreationCommand seq =
         artifacts |> Seq.map (fun artifact ->
             step(
-                name = "Push to NuGet",
+                name = "Push artifact to NuGet",
                 run = $"dotnet nuget push {artifact} --source https://api.nuget.org/v3/index.json --api-key ${{ secrets." + nuGetApiKeyId + " }}"
             )
         )
