@@ -6,6 +6,11 @@ Generaptor helps you to maintain GitHub actions for your project. It can generat
 Now you can manage your action definitions via NuGet packages, and port the whole workflows between repositories.
 A bit of strong typing will also help to avoid mistakes!
 
+NuGet package links:
+- [![Generaptor][nuget.badge.generaptor]][nuget.generaptor]
+- [![Generaptor.Library][nuget.badge.generaptor-library]][nuget.generaptor-library]
+
+
 Showcase
 --------
 Consider this F# program (this is actually used in this very repository):
@@ -118,4 +123,8 @@ Documentation
 [docs.license]: ./LICENSE.md
 [docs.maintainer-guide]: ./MAINTAINERSHIP.md
 [example.main]: ./Infrastructure/GitHubActions/Program.fs
+[nuget.badge.generaptor-library]: https://img.shields.io/nuget/v/Generaptor.Library
+[nuget.badge.generaptor]: https://img.shields.io/nuget/v/Generaptor
+[nuget.generaptor-library]: https://www.nuget.org/packages/Generaptor.Library
+[nuget.generaptor]: https://www.nuget.org/packages/Generaptor
 [status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg
