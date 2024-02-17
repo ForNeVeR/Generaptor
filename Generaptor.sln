@@ -19,7 +19,7 @@ Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor", "Generaptor\Ge
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{FC1DB59B-C7D2-4D7B-BBD9-8183E2317EA1}"
 EndProject
-Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GitHubActions", "GitHubActions\GitHubActions.fsproj", "{B1CF5868-2797-46C1-8ADD-E76D46127842}"
+Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "GitHubActions", "Infrastructure\GitHubActions\GitHubActions.fsproj", "{B1CF5868-2797-46C1-8ADD-E76D46127842}"
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Tests", "Generaptor.Tests\Generaptor.Tests.fsproj", "{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}"
 EndProject

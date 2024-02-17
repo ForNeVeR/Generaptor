@@ -11,8 +11,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\Generaptor.Library\Generaptor.Library.fsproj" />
-      <ProjectReference Include="..\Generaptor\Generaptor.fsproj" />
+      <ProjectReference Include="..\..\Generaptor.Library\Generaptor.Library.fsproj" />
+      <ProjectReference Include="..\..\Generaptor\Generaptor.fsproj" />
     </ItemGroup>
 
 </Project>

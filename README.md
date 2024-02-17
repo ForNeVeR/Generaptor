@@ -1,7 +1,7 @@
 🦖 Generaptor [![Status Zero][status-zero]][andivionian-status-classifier]
 ============
 
-Generaptor helps you to maintain GitHub actions for your project. It can generate the YAML files and verify that they are correct, according to your specification.
+Generaptor helps you to maintain GitHub actions for your project. It can generate the YAML files, according to the specification defined in your code.
 
 Now you can manage your action definitions via NuGet packages, and port the whole workflows between repositories.
 A bit of strong typing will also help to avoid mistakes!
@@ -18,40 +18,47 @@ let images = [
 ]
 
 let workflows = [
-    workflow("main") [
+    workflow "main" [
         name "Main"
         onPushTo mainBranch
         onPullRequestTo mainBranch
         onSchedule(day = DayOfWeek.Saturday)
+        onWorkflowDispatch
         job "main" [
             checkout
             yield! dotNetBuildAndTest()
         ] |> addMatrix images
     ]
 ]
+
+[<EntryPoint>]
+let main(args: string[]): int =
+    EntryPoint.Process args workflows
 ```
+
+(See the actual example with all the imports in [the main program file][example.main].)
 
 It will generate the following GitHub action configuration:
 ```yaml
-# This file is auto-generated.
 name: Main
 on:
   push:
     branches:
-    - main
+      - main
   pull_request:
     branches:
-    - main
+      - main
   schedule:
-  - cron: 0 0 * * 6
+    - cron: 0 0 * * 6
+  workflow_dispatch:
 jobs:
   main:
     strategy:
       matrix:
         image:
-        - macos-12
-        - ubuntu-22.04
-        - windows-2022
+          - macos-12
+          - ubuntu-22.04
+          - windows-2022
       fail-fast: false
     runs-on: ${{ matrix.image }}
     env:
@@ -59,22 +66,41 @@ jobs:
       DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v4
-      with:
-        dotnet-version: 8.0.x
-    - name: NuGet cache
-      uses: actions/cache@v4
-      with:
-        key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
-        path: ${{ env.NUGET_PACKAGES }}
-    - name: Build
-      run: dotnet build
-    - name: Test
-      run: dotnet test
-      timeout-minutes: 10
+      - uses: actions/checkout@v4
+      - name: Set up .NET SDK
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+      - name: NuGet cache
+        uses: actions/cache@v4
+        with:
+          key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
+          path: ${{ env.NUGET_PACKAGES }}
+      - name: Build
+        run: dotnet build
+      - name: Test
+        run: dotnet test
+        timeout-minutes: 10
 ```
+
+How to Use
+----------
+1. Create a new F# project in your solution. The location doesn't matter, but we recommend calling it `GitHubActions` and put inside the `Infrastructure` solution folder, to not mix it with the main code.
+2. Install the `Generaptor.Library` NuGet package.
+3. Call the `Generaptor.EntryPoint.Process` method with the arguments passed to the `main` function and the list of workflows you want to generate.
+4. Run the program from the repository root folder in your shell, for example:
+   ```console
+   $ cd <your-repository-root-folder>
+   $ dotnet run --project ./Infrastructure/GitHubActions
+   ```
+
+   When called with empty arguments of with command `generate`, it will (re-)generate the workflow files in `.github/workflows` folder, relatively to the current directory.
+
+For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
+
+For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
+
+Feel free to create your own actions and patterns, and either send a PR to this repository, or publish your own NuGet packages!
 
 Documentation
 -------------
@@ -84,8 +110,12 @@ Documentation
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-zero-
+[api.github-actions]: ./Generaptor/GitHubActions.fs
+[api.library-actions]: ./Generaptor.Library/Actions.fs
+[api.library-patterns]: ./Generaptor.Library/Patterns.fs
 [docs.changelog]: ./CHANGELOG.md
 [docs.code-of-conduct]: ./CODE_OF_CONDUCT.md
 [docs.license]: ./LICENSE.md
 [docs.maintainer-guide]: ./MAINTAINERSHIP.md
+[example.main]: ./Infrastructure/GitHubActions/Program.fs
 [status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
