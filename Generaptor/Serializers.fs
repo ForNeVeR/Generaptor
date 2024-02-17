@@ -4,9 +4,9 @@ open System.Collections.Generic
 
 open YamlDotNet.Core
 open YamlDotNet.Serialization
+open YamlDotNet.Serialization.EventEmitters
 
 open Generaptor.GitHubActions
-open YamlDotNet.Serialization.EventEmitters
 
 let private convertTriggers(triggers: Triggers) =
     let map = Dictionary<string, obj>()
