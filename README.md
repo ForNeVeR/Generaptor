@@ -123,8 +123,8 @@ Documentation
 [docs.license]: ./LICENSE.md
 [docs.maintainer-guide]: ./MAINTAINERSHIP.md
 [example.main]: ./Infrastructure/GitHubActions/Program.fs
-[nuget.badge.generaptor-library]: https://img.shields.io/nuget/v/Generaptor.Library
-[nuget.badge.generaptor]: https://img.shields.io/nuget/v/Generaptor
+[nuget.badge.generaptor-library]: https://img.shields.io/nuget/v/Generaptor.Library?label=Generaptor.Library
+[nuget.badge.generaptor]: https://img.shields.io/nuget/v/Generaptor?label=Generaptor
 [nuget.generaptor-library]: https://www.nuget.org/packages/Generaptor.Library
 [nuget.generaptor]: https://www.nuget.org/packages/Generaptor
 [status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg
