@@ -57,11 +57,19 @@ let private convertStrategy(strategy: Strategy) =
         map.Add("fail-fast", strategy.FailFast) // default is true anyway
     map
 
+let private convertPermissions permissions =
+    Map.ofArray [|
+        if Set.contains ContentWrite permissions then
+            "contents", "write"
+    |]
+
 let private convertJobBody(job: Job) =
     let mutable map = Dictionary<string, obj>()
     match job.Strategy with
     | None -> ()
     | Some s -> map.Add("strategy", convertStrategy s)
+    if not job.Permissions.IsEmpty then
+        map.Add("permissions", convertPermissions job.Permissions)
     addOptional map "runs-on" job.RunsOn
     if job.Environment.Count > 0 then
         map.Add("env", job.Environment)

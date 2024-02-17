@@ -37,6 +37,7 @@ let workflows = [
         job "nuget" [
             runsOn linuxImage
             checkout
+            writeContentPermissions
 
             let configuration = "Release"
 

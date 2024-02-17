@@ -24,10 +24,13 @@ type TriggerCreationCommand =
     | OnSchedule of string
     | OnWorkflowDispatch
 
+type Permission = ContentWrite
+
 type Job = {
     Id: string
-    RunsOn: string option
+    Permissions: Set<Permission>
     Strategy: Strategy option
+    RunsOn: string option
     Environment: Map<string, string>
     Steps: ImmutableArray<Step>
 }
@@ -54,6 +57,7 @@ type Workflow = {
 }
 
 type JobCreationCommand =
+    | AddPermissions of Permission
     | RunsOn of string
     | AddStep of Step
     | SetEnv of string * string
@@ -71,10 +75,18 @@ let private addTrigger wf = function
     | OnWorkflowDispatch -> { wf with Workflow.Triggers.WorkflowDispatch = true }
 
 let private createJob id commands =
-    let mutable job = { Id = id; Strategy = None; RunsOn = None; Environment = Map.empty; Steps = ImmutableArray.Empty }
+    let mutable job = {
+        Id = id
+        Strategy = None
+        Permissions = Set.empty
+        RunsOn = None
+        Environment = Map.empty
+        Steps = ImmutableArray.Empty
+    }
     for command in commands do
         job <-
             match command with
+            | AddPermissions p -> { job with Permissions = Set.add p job.Permissions }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
             | SetEnv (key, value) -> { job with Environment = Map.add key value job.Environment}
@@ -125,6 +137,8 @@ type Commands =
     static member job (id: string) (commands: JobCreationCommand seq): WorkflowCreationCommand =
         AddJob(createJob id commands)
 
+    static member writeContentPermissions: JobCreationCommand =
+        AddPermissions(ContentWrite)
     static member runsOn(image: string): JobCreationCommand =
         RunsOn image
     static member setEnv (key: string) (value: string): JobCreationCommand =
