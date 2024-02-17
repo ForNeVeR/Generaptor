@@ -1,4 +1,4 @@
-🦖 Generaptor [![Status Zero][status-zero]][andivionian-status-classifier]
+🦖 Generaptor [![Status Ventis][status-ventis]][andivionian-status-classifier]
 ============
 
 Generaptor helps you to maintain GitHub actions for your project. It can generate the YAML files, according to the specification defined in your code.
@@ -109,7 +109,7 @@ Documentation
 - [Maintainer Guide][docs.maintainer-guide]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
-[andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-zero-
+[andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-ventis-
 [api.github-actions]: ./Generaptor/GitHubActions.fs
 [api.library-actions]: ./Generaptor.Library/Actions.fs
 [api.library-patterns]: ./Generaptor.Library/Patterns.fs
@@ -118,4 +118,4 @@ Documentation
 [docs.license]: ./LICENSE.md
 [docs.maintainer-guide]: ./MAINTAINERSHIP.md
 [example.main]: ./Infrastructure/GitHubActions/Program.fs
-[status-zero]: https://img.shields.io/badge/status-zero-lightgrey.svg
+[status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg
