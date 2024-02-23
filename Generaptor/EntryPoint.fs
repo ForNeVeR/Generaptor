@@ -1,4 +1,4 @@
-﻿module Generaptor.EntryPoint
+module Generaptor.EntryPoint
 
 open System.IO
 
@@ -7,7 +7,7 @@ open Generaptor.GitHubActions
 let private printUsage() =
     printfn "%s" ("""Possible arguments:
     generate - generate GitHub Actions workflows .github/workflows subdirectory of the current directory
-""".ReplaceLineEndings @"\n")
+""".ReplaceLineEndings "\n")
 
 let private generateWorkflows (workflows: Workflow seq) =
     let dir = Path.Combine(".github", "workflows")
@@ -23,4 +23,5 @@ let Process(args: string seq) (workflows: Workflow seq): int =
     let args = Seq.toArray args
     match args with
     | [||] | [|"generate"|] -> generateWorkflows workflows; 0
+    | [|x|] | [|x;"generate"|] when x.EndsWith(".fsx") -> generateWorkflows workflows; 0
     | _ -> printUsage(); 1

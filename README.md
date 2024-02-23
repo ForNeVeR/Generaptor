@@ -101,6 +101,11 @@ How to Use
 
    When called with empty arguments of with command `generate`, it will (re-)generate the workflow files in `.github/workflows` folder, relatively to the current directory.
 
+5. Alternatively you can put all your code in infrastructure.fsx file and run
+   ```console
+   dotnet fsi infrastructure.fsx
+   ```
+
 For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
 
 For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
