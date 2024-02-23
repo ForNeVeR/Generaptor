@@ -4,6 +4,7 @@
 
         <Authors>ForNeVeR</Authors>
         <PackageProjectUrl>https://github.com/ForNeVeR/Generaptor</PackageProjectUrl>
+        <PackageLicenseExpression>MIT</PackageLicenseExpression>
         <RepositoryUrl>https://github.com/ForNeVeR/Generaptor.git</RepositoryUrl>
         <PackageTags>ci;github-actions</PackageTags>
 
