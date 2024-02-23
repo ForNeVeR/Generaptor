@@ -90,6 +90,11 @@ jobs:
 
 How to Use
 ----------
+We recommend two main modes of execution for Generaptor: from a .NET project and from a script file.
+
+### .NET Project
+This integration is useful if you already have a solution file, and it's more convenient for you to have your infrastructure in a new project in that solution. Follow this instruction.
+
 1. Create a new F# project in your solution. The location doesn't matter, but we recommend calling it `GitHubActions` and put inside the `Infrastructure` solution folder, to not mix it with the main code.
 2. Install the `Generaptor.Library` NuGet package.
 3. Call the `Generaptor.EntryPoint.Process` method with the arguments passed to the `main` function and the list of workflows you want to generate.
@@ -101,11 +106,51 @@ How to Use
 
    When called with empty arguments of with command `generate`, it will (re-)generate the workflow files in `.github/workflows` folder, relatively to the current directory.
 
-5. Alternatively you can put all your code in infrastructure.fsx file and run
-   ```console
-   dotnet fsi infrastructure.fsx
-   ```
+### Script File
+As an alternative execution mode, we also support execution from an F# script file.
 
+Put your code (see an example below) into an `.fsx` file (say, `github-actions.fsx`), and run it with the following shell command:
+
+```console
+$ dotnet fsi github-actions.fsx [optional parameters may go here]
+```
+
+The script file example:
+```fsharp
+#r "nuget: Generaptor.Library, 1.1.0"
+open System
+
+open Generaptor
+open Generaptor.GitHubActions
+open type Generaptor.GitHubActions.Commands
+open type Generaptor.Library.Actions
+open type Generaptor.Library.Patterns
+
+let mainBranch = "main"
+let images = [
+    "macos-12"
+    "ubuntu-22.04"
+    "windows-2022"
+]
+
+let workflows = [
+    workflow "main" [
+        name "Main"
+        onPushTo mainBranch
+        onPullRequestTo mainBranch
+        onSchedule(day = DayOfWeek.Saturday)
+        onWorkflowDispatch
+        job "main" [
+            checkout
+            yield! dotNetBuildAndTest()
+        ] |> addMatrix images
+    ]
+]
+
+EntryPoint.Process fsi.CommandLineArgs workflows
+```
+
+### Available Features
 For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
 
 For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
