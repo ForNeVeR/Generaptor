@@ -23,5 +23,5 @@ To update the key:
    - **Generaptor.Library**.
 4. Paste the generated key to the `NUGET_TOKEN` variable on the [action secrets][github.secrets] section of GitHub settings.
 
-[github.secrets]: https://github.com/ForNeVeR/xaml-math/settings/secrets/actions
+[github.secrets]: https://github.com/ForNeVeR/Generaptor/settings/secrets/actions
 [nuget.api-keys]: https://www.nuget.org/account/apikeys
