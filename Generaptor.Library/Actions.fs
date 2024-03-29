@@ -38,10 +38,11 @@ type Actions =
             ]
         )
 
-    static member createRelease(name: string, releaseNotesPath: string, files: string seq): JobCreationCommand =
+    static member createRelease(name: string, releaseNotesPath: string, files: string seq, ?actionVersion: string): JobCreationCommand =
+        let version = defaultArg actionVersion "v2"
         step(
             name = "Create a release",
-            uses = "softprops/action-gh-release@v1",
+            uses = $"softprops/action-gh-release@{version}",
             options = Map.ofList [
                 "name", name
                 "body_path", releaseNotesPath
