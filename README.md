@@ -164,6 +164,12 @@ Documentation
 - [Maintainer Guide][docs.maintainer-guide]
 - [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
 
+Versioning Notes
+----------------
+This project's versioning follows the [Semantic Versioning 2.0.0][semver] specification.
+
+When considering compatible changes, we currently only consider the source compatibility with the user scripts, not binary compatibility. This may be subject to change in the future.
+
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-ventis-
 [api.github-actions]: ./Generaptor/GitHubActions.fs
 [api.library-actions]: ./Generaptor.Library/Actions.fs
@@ -177,4 +183,5 @@ Documentation
 [nuget.badge.generaptor]: https://img.shields.io/nuget/v/Generaptor?label=Generaptor
 [nuget.generaptor-library]: https://www.nuget.org/packages/Generaptor.Library
 [nuget.generaptor]: https://www.nuget.org/packages/Generaptor
+[semver]: https://semver.org/spec/v2.0.0.html
 [status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg

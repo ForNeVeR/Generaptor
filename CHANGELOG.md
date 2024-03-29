@@ -2,7 +2,9 @@ Changelog
 =========
 All notable changes to this project will be documented in this file.
 
-The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver].
+The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
+
+[docs.readme]: README.md
 
 ## [1.1.0] - 2024-02-23
 ### Added
