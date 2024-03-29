@@ -14,6 +14,7 @@
     </ItemGroup>
 
     <ItemGroup>
+      <PackageReference Include="ChangelogAutomation.MSBuild" Version="2.0.0" PrivateAssets="All" />
       <PackageReference Include="YamlDotNet" Version="15.1.1" />
     </ItemGroup>
 

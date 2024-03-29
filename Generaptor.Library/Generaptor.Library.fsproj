@@ -14,4 +14,8 @@
       <ProjectReference Include="..\Generaptor\Generaptor.fsproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <PackageReference Include="ChangelogAutomation.MSBuild" Version="2.0.0" PrivateAssets="All" />
+    </ItemGroup>
+
 </Project>
