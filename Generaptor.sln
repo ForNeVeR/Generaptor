@@ -25,6 +25,9 @@ EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor.Tests", "Generaptor.Tests\Generaptor.Tests.fsproj", "{56E337A3-37CC-430B-87E2-3CAFE6FFEBAB}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".github", ".github", "{3AB1C8E3-61F0-437B-9BE5-B7098E7EFF2E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\dependabot.yml = .github\dependabot.yml
+	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "workflows", "workflows", "{38B19542-0515-4A04-89E9-27D8375303BD}"
 	ProjectSection(SolutionItems) = preProject
