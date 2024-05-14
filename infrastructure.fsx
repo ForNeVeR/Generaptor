@@ -15,11 +15,11 @@ open type Generaptor.Library.Actions
 open type Generaptor.Library.Patterns
 
 let mainBranch = "main"
-let linuxImage = "ubuntu-22.04"
+let linuxImage = "ubuntu-latest"
 let images = [
-    "macos-12"
+    "macos-latest"
     linuxImage
-    "windows-2022"
+    "windows-latest"
 ]
 
 let workflows = [
