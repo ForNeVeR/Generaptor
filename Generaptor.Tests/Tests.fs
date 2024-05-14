@@ -13,6 +13,7 @@ let ``Basic workflow gets generated``(): unit =
         onPushTo "main"
 
         job "main" [|
+            needs "another"
             runsOn "ubuntu-latest"
             step(uses = "actions/checkout@v4")
         |]
@@ -24,6 +25,8 @@ on:
     - main
 jobs:
   main:
+    needs:
+    - another
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4

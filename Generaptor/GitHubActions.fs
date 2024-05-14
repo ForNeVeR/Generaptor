@@ -29,6 +29,7 @@ type Permission = ContentWrite
 type Job = {
     Id: string
     Permissions: Set<Permission>
+    Needs: ImmutableArray<string>
     Strategy: Strategy option
     RunsOn: string option
     Environment: Map<string, string>
@@ -58,6 +59,7 @@ type Workflow = {
 
 type JobCreationCommand =
     | AddPermissions of Permission
+    | Needs of string
     | RunsOn of string
     | AddStep of Step
     | SetEnv of string * string
@@ -79,6 +81,7 @@ let private createJob id commands =
         Id = id
         Strategy = None
         Permissions = Set.empty
+        Needs = ImmutableArray.Empty
         RunsOn = None
         Environment = Map.empty
         Steps = ImmutableArray.Empty
@@ -87,6 +90,7 @@ let private createJob id commands =
         job <-
             match command with
             | AddPermissions p -> { job with Permissions = Set.add p job.Permissions }
+            | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
             | SetEnv (key, value) -> { job with Environment = Map.add key value job.Environment}
@@ -139,6 +143,8 @@ type Commands =
 
     static member writeContentPermissions: JobCreationCommand =
         AddPermissions(ContentWrite)
+    static member needs(jobId: string): JobCreationCommand =
+        Needs jobId
     static member runsOn(image: string): JobCreationCommand =
         RunsOn image
     static member setEnv (key: string) (value: string): JobCreationCommand =

@@ -70,6 +70,8 @@ let private convertJobBody(job: Job) =
     | Some s -> map.Add("strategy", convertStrategy s)
     if not job.Permissions.IsEmpty then
         map.Add("permissions", convertPermissions job.Permissions)
+    if not job.Needs.IsEmpty then
+        map.Add("needs", job.Needs)
     addOptional map "runs-on" job.RunsOn
     if job.Environment.Count > 0 then
         map.Add("env", job.Environment)
