@@ -150,6 +150,7 @@ type Commands =
     static member setEnv (key: string) (value: string): JobCreationCommand =
         SetEnv(key, value)
     static member step(?id: string,
+                       ?condition: string,
                        ?name: string,
                        ?uses: string,
                        ?shell: string,
@@ -157,7 +158,7 @@ type Commands =
                        ?options: Map<string, string>,
                        ?timeoutMin: int): JobCreationCommand =
         AddStep {
-            Condition = None
+            Condition = condition
             Id = id
             Name = name
             UsesAction = uses

@@ -6,6 +6,10 @@ open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
 
+let private doTest (expected: string) wf =
+    let actual = Serializers.Stringify wf
+    Assert.Equal(expected.ReplaceLineEndings "\n", actual)
+
 [<Fact>]
 let ``Basic workflow gets generated``(): unit =
     let wf = workflow("wf") [|
@@ -31,4 +35,26 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 """
-    Assert.Equal(expected.ReplaceLineEndings "\n", Serializers.Stringify wf)
+    doTest expected wf
+
+[<Fact>]
+let ``Condition tests``(): unit =
+    let wf = workflow("wf") [|
+        onPushTo "main"
+        job "main" [|
+            step(uses = "aaa")
+            step(uses = "bbb", condition = "goes here")
+        |]
+    |]
+    let expected = """on:
+  push:
+    branches:
+    - main
+jobs:
+  main:
+    steps:
+    - uses: aaa
+    - if: goes here
+      uses: bbb
+"""
+    doTest expected wf
