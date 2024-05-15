@@ -46,6 +46,8 @@ let private convertSteps steps =
         addOptional map "run" step.Run
         if not <| Map.isEmpty step.Options then
             map.Add("with", step.Options)
+        if not <| Map.isEmpty step.Environment then
+            map.Add("env", step.Environment)
         addOptional map "timeout-minutes" step.TimeoutMin
         map
     )

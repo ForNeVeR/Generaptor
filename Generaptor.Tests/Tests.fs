@@ -58,3 +58,26 @@ jobs:
       uses: bbb
 """
     doTest expected wf
+
+[<Fact>]
+let ``Environment tests``(): unit =
+    let wf = workflow("wf") [|
+        onPushTo "main"
+        job "main" [|
+            step(uses = "aaa")
+            step(uses = "bbb", env = Map.ofList [ "foo", "bar" ])
+        |]
+    |]
+    let expected = """on:
+  push:
+    branches:
+    - main
+jobs:
+  main:
+    steps:
+    - uses: aaa
+    - uses: bbb
+      env:
+        foo: bar
+"""
+    doTest expected wf

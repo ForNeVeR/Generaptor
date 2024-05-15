@@ -4,6 +4,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [1.5.0] - 2025-05-16
+### Added
+- `Commands.step`: new parameter `env` that gets transformed into `env` on the corresponding action step.
+
 ## [1.4.0] - 2025-05-15
 ### Added
 - `Commands.step`: new parameter `condition` that gets transformed into `if` on the corresponding action step.
@@ -40,4 +44,5 @@ The initial release of this package. Main features:
 [1.2.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.1.0...v1.2.0
 [1.3.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.2.0...v1.3.0
 [1.4.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.3.0...v1.4.0
-[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.4.0...HEAD
+[1.5.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.4.0...v1.5.0
+[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.5.0...HEAD

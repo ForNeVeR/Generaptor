@@ -47,6 +47,7 @@ and Step = {
     Shell: string option
     Run: string option
     Options: Map<string, string>
+    Environment: Map<string, string>
     TimeoutMin: int option
 }
 
@@ -156,6 +157,7 @@ type Commands =
                        ?shell: string,
                        ?run: string,
                        ?options: Map<string, string>,
+                       ?env: Map<string, string>,
                        ?timeoutMin: int): JobCreationCommand =
         AddStep {
             Condition = condition
@@ -165,5 +167,6 @@ type Commands =
             Shell = shell
             Run = run
             Options = defaultArg options Map.empty
+            Environment = defaultArg env Map.empty
             TimeoutMin = timeoutMin
         }
