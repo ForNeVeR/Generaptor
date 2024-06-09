@@ -1,4 +1,4 @@
-module Generaptor.Tests
+module Generaptor.Tests.GeneratorTests
 
 open Xunit
 
