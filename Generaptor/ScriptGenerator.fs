@@ -1,5 +1,6 @@
 ﻿module Generaptor.ScriptGenerator
 
+open System
 open System.Collections.Generic
 open System.Collections
 open System.IO
@@ -8,7 +9,7 @@ open TruePath
 open YamlDotNet.Serialization
 
 // Auto-updated by /Scripts/Update-Version.ps1
-let PackageVersion = "1.2.0"
+let PackageVersion = "1.2.0" // TODO: Just pick this from the assembly?
 
 let private ParseYaml(file: LocalPath): Dictionary<string, obj> =
     let deserializer = DeserializerBuilder().Build()
@@ -16,7 +17,7 @@ let private ParseYaml(file: LocalPath): Dictionary<string, obj> =
 
 let private StringLiteral(x: obj) =
     let s = x :?> string
-    $"\"{s}\""
+    $"\"{s}\"" // TODO: String escaping
 
 let private SerializeOn(data: Dictionary<obj, obj>): string =
     let builder = StringBuilder()
@@ -61,7 +62,7 @@ let private SerializeStrategyMatrix (m: IDictionary) =
         let builder = StringBuilder()
         let append (x: string) = builder.Append x |> ignore
         match item with
-        | :? string as s -> append $"\"{s}\"" // TODO: String escaping
+        | :? string as s -> append <| StringLiteral s
         | :? IEnumerable as collection ->
             append "["
             for x in collection do
@@ -75,7 +76,8 @@ let private SerializeStrategyMatrix (m: IDictionary) =
     for kvp in m do
         let kvp = kvp :?> DictionaryEntry
         append $"\n                \"{kvp.Key}\", {serializeItem kvp.Value}"
-    builder.Append("]").ToString()
+    if m.Count > 0 then append "\n"
+    builder.Append("            ]").ToString()
 
 let private SerializeStrategy(data: obj): string =
     let map = data :?> Dictionary<obj, obj>
@@ -98,43 +100,50 @@ let private SerializeStrategy(data: obj): string =
         | "fail-fast" -> () // already processed
         | "matrix" -> append "matrix" (SerializeStrategyMatrix(value :?> IDictionary))
         | other -> failwithf $"Unknown key in the 'strategy' section: \"{other}\"."
-    builder.Append "    ]" |> ignore
-    builder.ToString()
+    builder.Append(")").ToString()
 
-let private SerializeEnv(data: obj): string =
-    let builder = StringBuilder().Append "env ["
-    let append v = builder.Append $"    {v}" |> ignore
+let private SerializeEnv(data: obj, indent: unit -> string): string =
+    let result = StringBuilder()
+    let append(x: string) = result.AppendLine $"{indent()}{x}" |> ignore
     let data = data :?> Dictionary<obj, obj>
     for kvp in data do
         let key = kvp.Key :?> string
         let value = kvp.Value
-        append $"""    {key}: {StringLiteral value}"""
-    builder.Append "    ]" |> ignore
-    builder.ToString()
+        append $"setEnv {StringLiteral key} {StringLiteral value}"
+    result.ToString()
 
-let private SerializeSteps(data: obj): string =
-    let builder = StringBuilder().Append "steps ["
-    let append v = builder.Append $"    {v}" |> ignore
+let private Indent(spaces: int) () = String(' ', spaces)
+
+let private IndentExceptFirst(spaces: int) = // TODO: Should not be used
+    let mutable firstLinePassed = false
+    fun() ->
+        if firstLinePassed then String(' ', spaces)
+        else
+            firstLinePassed <- true
+            ""
+
+let private SerializeSteps(data: obj, indent: unit -> string): string =
+    let builder = StringBuilder()
+    let append(x: string) = builder.AppendLine $"{indent()}{x}" |> ignore
     let data = data :?> obj seq
     for step in data do
         let step = step :?> Dictionary<obj, obj>
-        append "step ["
+        append "step("
         for kvp in step do
             let key = kvp.Key :?> string
             let value = kvp.Value
             match key with
-            | "if" -> append $"if {StringLiteral value}"
-            | "id" -> append $"id {StringLiteral value}"
-            | "name" -> append $"name {StringLiteral value}"
-            | "uses" -> append $"uses {StringLiteral value}"
-            | "shell" -> append $"shell {StringLiteral value}"
-            | "run" -> append $"run {StringLiteral value}"
-            | "with" -> append $"with {SerializeEnv value}"
-            | "env" -> append $"env {SerializeEnv value}"
-            | "timeout-minutes" -> append $"timeout-minutes {value}"
+            | "if" -> append $"  if = {StringLiteral value}"
+            | "id" -> append $"  id = {StringLiteral value}"
+            | "name" -> append $"  name = {StringLiteral value}"
+            | "uses" -> append $"  uses = {StringLiteral value}"
+            | "shell" -> append $"  shell = {StringLiteral value}"
+            | "run" -> append $"  run = {StringLiteral value}"
+            | "with" -> append $"  with = {SerializeEnv(value, IndentExceptFirst 2)}"
+            | "env" -> append $"  env = {SerializeEnv(value, IndentExceptFirst 2)}"
+            | "timeout-minutes" -> append $"  timeoutMinutes = {value}"
             | other -> failwithf $"Unknown key in the 'steps' section: \"{other}\"."
-        builder.Append "    ]" |> ignore
-    builder.Append "    ]" |> ignore
+        append ")"
     builder.ToString()
 
 let private SerializePermissions(value: obj) =
@@ -169,9 +178,9 @@ let private SerializeJobs(jobs: obj): string =
             let value = kvp.Value
             match key with
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
-            | "runs-on" -> append $"runs-on {StringLiteral value}"
-            | "env" -> append <| SerializeEnv value
-            | "steps" -> append <| SerializeSteps value
+            | "runs-on" -> append $"runsOn {StringLiteral value}"
+            | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
+            | "steps" -> append <| SerializeSteps(value, IndentExceptFirst 12)
             | "permissions" -> append <| SerializePermissions value
             | other -> failwithf $"Unknown key in the 'jobs' section: \"{other}\"."
         builder.Append "    ]" |> ignore
