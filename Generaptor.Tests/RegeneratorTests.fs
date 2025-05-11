@@ -99,6 +99,13 @@ let workflows = [
         onSchedule "0 0 * * 6"
         onWorkflowDispatch
         job "main" [
+            strategy(failFast = false, matrix = [
+                "image", [
+                    "macos-latest"
+                    "ubuntu-latest"
+                    "windows-latest"
+                ]
+            ])
             checkout
             yield! dotNetBuildAndTest()
         ] |> addMatrix images

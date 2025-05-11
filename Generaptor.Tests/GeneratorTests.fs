@@ -81,3 +81,29 @@ jobs:
         foo: bar
 """
     doTest expected wf
+
+[<Fact>]
+let ``Strategy test``(): unit =
+    let wf = workflow "wf" [
+        job "main" [|
+            strategy(failFast = false, matrix = [|
+                "image", [
+                    "macos-latest"
+                    "ubuntu-latest"
+                    "windows-latest"
+                ]
+            |])
+        |]
+    ]
+    let expected = """on: {}
+jobs:
+  main:
+    strategy:
+      matrix:
+        image:
+        - macos-latest
+        - ubuntu-latest
+        - windows-latest
+      fail-fast: false
+"""
+    doTest expected wf
