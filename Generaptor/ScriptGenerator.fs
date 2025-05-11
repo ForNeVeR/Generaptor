@@ -1,6 +1,7 @@
 ﻿module Generaptor.ScriptGenerator
 
 open System.Collections.Generic
+open System.Collections
 open System.IO
 open System.Text
 open TruePath
@@ -55,16 +56,47 @@ let private SerializeOn(data: Dictionary<obj, obj>): string =
         | other -> failwithf $"Unknown key in the 'on' section: \"{other}\"."
     builder.ToString()
 
+let private SerializeStrategyMatrix (m: IDictionary) =
+    let rec serializeItem(item: obj) =
+        let builder = StringBuilder()
+        let append (x: string) = builder.Append x |> ignore
+        match item with
+        | :? string as s -> append $"\"{s}\"" // TODO: String escaping
+        | :? IEnumerable as collection ->
+            append "["
+            for x in collection do
+                append $"\n                    {serializeItem x}"
+            append "\n                ]"
+        | unknown -> failwithf $"Unknown element of strategy's matrix: \"{unknown}\"."
+        builder.ToString()
+
+    let builder = StringBuilder().Append("[")
+    let append (x: string) = builder.Append x |> ignore
+    for kvp in m do
+        let kvp = kvp :?> DictionaryEntry
+        append $"\n                \"{kvp.Key}\", {serializeItem kvp.Value}"
+    builder.Append("]").ToString()
+
 let private SerializeStrategy(data: obj): string =
     let map = data :?> Dictionary<obj, obj>
-    let builder = StringBuilder().Append "strategy ["
-    let append v = builder.Append $"    {v}" |> ignore
+    let builder = StringBuilder().Append "("
+    let mutable hasArguments = false
+    let append k v =
+        if hasArguments then builder.Append ", " |> ignore
+        builder.Append $"{k} = {v}" |> ignore
+        hasArguments <- true
+
+    // fail-fast should go first
+    match map.GetValueOrDefault "fail-fast" with
+    | null -> ()
+    | v -> append "failFast" v
+
     for kvp in map do
         let key = kvp.Key :?> string
         let value = kvp.Value
         match key with
-        | "matrix" -> append $"matrix {value}"
-        | "fail-fast" -> append $"fail-fast {value}"
+        | "fail-fast" -> () // already processed
+        | "matrix" -> append "matrix" (SerializeStrategyMatrix(value :?> IDictionary))
         | other -> failwithf $"Unknown key in the 'strategy' section: \"{other}\"."
     builder.Append "    ]" |> ignore
     builder.ToString()
@@ -131,12 +163,12 @@ let private SerializeJobs(jobs: obj): string =
         let content = kvp.Value :?> Dictionary<obj, obj>
 
         append $"job \"{name}\" ["
-        let append v = builder.Append $"    {v}" |> ignore
+        let append v = append $"    {v}"
         for kvp in content do
             let key = kvp.Key :?> string
             let value = kvp.Value
             match key with
-            | "strategy" -> append <| $"strategy {SerializeStrategy value}"
+            | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runs-on {StringLiteral value}"
             | "env" -> append <| SerializeEnv value
             | "steps" -> append <| SerializeSteps value

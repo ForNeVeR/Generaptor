@@ -37,7 +37,7 @@ type Job = {
 }
 and Strategy = {
     Matrix: Map<string, obj>
-    FailFast: bool
+    FailFast: bool option
 }
 and Step = {
     Condition: string option
@@ -64,6 +64,7 @@ type JobCreationCommand =
     | RunsOn of string
     | AddStep of Step
     | SetEnv of string * string
+    | AddStrategy of Strategy
 
 type WorkflowCreationCommand =
     | SetName of string
@@ -95,6 +96,7 @@ let private createJob id commands =
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
             | SetEnv (key, value) -> { job with Environment = Map.add key value job.Environment}
+            | AddStrategy s -> { job with Strategy = Some s }
     job
 
 let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
@@ -169,4 +171,9 @@ type Commands =
             Options = defaultArg options Map.empty
             Environment = defaultArg env Map.empty
             TimeoutMin = timeoutMin
+        }
+    static member strategy(matrix: seq<string * obj>, ?failFast: bool): JobCreationCommand =
+        AddStrategy {
+           FailFast = failFast
+           Matrix = Map.ofSeq matrix
         }

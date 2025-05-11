@@ -55,8 +55,9 @@ let private convertSteps steps =
 let private convertStrategy(strategy: Strategy) =
     let map = Dictionary<string, obj>()
     map.Add("matrix", strategy.Matrix)
-    if not strategy.FailFast then
-        map.Add("fail-fast", strategy.FailFast) // default is true anyway
+    match strategy.FailFast with
+    | None -> ()
+    | Some v -> map.Add("fail-fast", v)
     map
 
 let private convertPermissions permissions =
