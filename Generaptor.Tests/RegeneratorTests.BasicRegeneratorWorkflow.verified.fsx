@@ -43,49 +43,43 @@ let workflows = [
             )
         ]
     ]
-    workflow "release" [
+    workflow "2" [
         name "Release"
-        yield! mainTriggers
+        onPushTo "main"
         onPushTags "v*"
+        onPullRequestTo "main"
+        onSchedule "0 0 * * 6"
+        onWorkflowDispatch
         job "nuget" [
-            runsOn linuxImage
-            checkout
             writeContentPermissions
-
-            let configuration = "Release"
-
-            let versionStepId = "version"
-            let versionField = "${{ steps." + versionStepId + ".outputs.version }}"
-            getVersionWithScript(stepId = versionStepId, scriptPath = "Scripts/Get-Version.ps1")
-            dotNetPack(version = versionField)
-
-            let releaseNotes = "./release-notes.md"
-            prepareChangelog(releaseNotes)
-            let artifacts projectName includeSNuPkg = [
-                $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.nupkg"
-                if includeSNuPkg then $"./{projectName}/bin/{configuration}/{projectName}.{versionField}.snupkg"
-            ]
-            let allArtifacts = [
-                yield! artifacts "Generaptor" true
-                yield! artifacts "Generaptor.Library" true
-            ]
-            uploadArtifacts [
-                releaseNotes
-                yield! allArtifacts
-            ]
-            yield! ifCalledOnTagPush [
-                createRelease(
-                    name = $"Generaptor {versionField}",
-                    releaseNotesPath = releaseNotes,
-                    files = allArtifacts
-                )
-                yield! pushToNuGetOrg "NUGET_TOKEN" [
-                    yield! artifacts "Generaptor" false
-                    yield! artifacts "Generaptor.Library" false
+            runsOn "ubuntu-latest"
+            step(
+                uses = "actions/checkout@v4"
+            )
+            step(
+                id = "version"
+                name = "Get version"
+                shell = "pwsh"
+                run = "echo \"version=$(Scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
+            )
+            step(
+                run = "dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}"
+            )
+            step(
+                name = "Read changelog"
+                uses = "ForNeVeR/ChangelogAutomation.action@v1"
+                options = Map.ofList [
+                    "output", "./release-notes.md"
                 ]
-            ]
+            )
+            step(
+                name = "Upload artifacts"
+                uses = "actions/upload-artifact@v4"
+                options = Map.ofList [
+                    "path", "./release-notes.md\n./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg\n./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.snupkg\n./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg\n./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg"
+                ]
+            )
         ]
     ]
-]
 ]
 EntryPoint.Process fsi.CommandLineArgs workflows
