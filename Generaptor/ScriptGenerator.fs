@@ -114,13 +114,12 @@ let private SerializeEnv(data: obj, indent: unit -> string): string =
 
 let private Indent(spaces: int) () = String(' ', spaces)
 
-let private IndentExceptFirst(spaces: int) = // TODO: Should not be used
-    let mutable firstLinePassed = false
-    fun() ->
-        if firstLinePassed then String(' ', spaces)
-        else
-            firstLinePassed <- true
-            ""
+let private SerializeOptions(map: obj, indent: unit -> string) =
+    let map = map :?> Dictionary<obj, obj>
+    let result = StringBuilder().AppendLine("Map.ofList [")
+    for kvp in map do
+        result.AppendLine $"{indent()}    {StringLiteral kvp.Key}, {StringLiteral kvp.Value}" |> ignore
+    result.Append($"{indent()}]").ToString()
 
 let private SerializeSteps(data: obj, indent: unit -> string): string =
     let builder = StringBuilder()
@@ -133,15 +132,15 @@ let private SerializeSteps(data: obj, indent: unit -> string): string =
             let key = kvp.Key :?> string
             let value = kvp.Value
             match key with
-            | "if" -> append $"  if = {StringLiteral value}"
-            | "id" -> append $"  id = {StringLiteral value}"
-            | "name" -> append $"  name = {StringLiteral value}"
-            | "uses" -> append $"  uses = {StringLiteral value}"
-            | "shell" -> append $"  shell = {StringLiteral value}"
-            | "run" -> append $"  run = {StringLiteral value}"
-            | "with" -> append $"  with = {SerializeEnv(value, IndentExceptFirst 2)}"
-            | "env" -> append $"  env = {SerializeEnv(value, IndentExceptFirst 2)}"
-            | "timeout-minutes" -> append $"  timeoutMinutes = {value}"
+            | "if" -> append $"    if = {StringLiteral value}"
+            | "id" -> append $"    id = {StringLiteral value}"
+            | "name" -> append $"    name = {StringLiteral value}"
+            | "uses" -> append $"    uses = {StringLiteral value}"
+            | "shell" -> append $"    shell = {StringLiteral value}"
+            | "run" -> append $"    run = {StringLiteral value}"
+            | "with" -> append $"    options = {SerializeOptions(value, Indent 16)}"
+            | "env" -> append $"    env = {SerializeEnv(value, Indent 2)}"
+            | "timeout-minutes" -> append $"    timeoutMin = {value}"
             | other -> failwithf $"Unknown key in the 'steps' section: \"{other}\"."
         append ")"
     builder.ToString()
@@ -180,10 +179,10 @@ let private SerializeJobs(jobs: obj): string =
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runsOn {StringLiteral value}"
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
-            | "steps" -> append <| SerializeSteps(value, IndentExceptFirst 12)
+            | "steps" -> builder.Append(SerializeSteps(value, Indent 12)) |> ignore
             | "permissions" -> append <| SerializePermissions value
             | other -> failwithf $"Unknown key in the 'jobs' section: \"{other}\"."
-        builder.Append "    ]" |> ignore
+        builder.AppendLine "        ]" |> ignore
 
     builder.ToString()
 
