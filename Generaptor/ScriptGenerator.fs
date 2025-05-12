@@ -17,7 +17,8 @@ let private ParseYaml(file: LocalPath): Dictionary<string, obj> =
 
 let private StringLiteral(x: obj) =
     let s = x :?> string
-    $"\"{s}\"" // TODO: String escaping
+    let s = s.Replace("\"", "\\\"").Replace("\n", "\\n")
+    $"\"{s}\""
 
 let private SerializeOn(data: Dictionary<obj, obj>): string =
     let builder = StringBuilder()
@@ -145,10 +146,10 @@ let private SerializeSteps(data: obj, indent: unit -> string): string =
         append ")"
     builder.ToString()
 
-let private SerializePermissions(value: obj) =
+let private SerializePermissions(value: obj, indent: unit -> string) =
     let permissions = value :?> Dictionary<obj, obj>
     let builder = StringBuilder()
-    let append v = builder.Append $"    {v}" |> ignore
+    let append v = builder.AppendLine $"{indent()}{v}" |> ignore
     for kvp in permissions do
         let key = kvp.Key :?> string
         let value = kvp.Value :?> string
@@ -180,7 +181,7 @@ let private SerializeJobs(jobs: obj): string =
             | "runs-on" -> append $"runsOn {StringLiteral value}"
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
             | "steps" -> builder.Append(SerializeSteps(value, Indent 12)) |> ignore
-            | "permissions" -> append <| SerializePermissions value
+            | "permissions" -> builder.Append(SerializePermissions(value, Indent 12)) |> ignore
             | other -> failwithf $"Unknown key in the 'jobs' section: \"{other}\"."
         builder.AppendLine "        ]" |> ignore
 
@@ -214,5 +215,4 @@ let GenerateFrom(workflowDirectory: LocalPath): string =
 let workflows = [
 {workflows}
 ]
-EntryPoint.Process fsi.CommandLineArgs workflows
-    """.ReplaceLineEndings "\n"
+EntryPoint.Process fsi.CommandLineArgs workflows""".ReplaceLineEndings "\n"
