@@ -68,6 +68,9 @@ let private convertPermissions permissions =
 
 let private convertJobBody(job: Job) =
     let mutable map = Dictionary<string, obj>()
+    match job.Name with
+    | None -> ()
+    | Some n -> map.Add("name", n)
     match job.Strategy with
     | None -> ()
     | Some s -> map.Add("strategy", convertStrategy s)

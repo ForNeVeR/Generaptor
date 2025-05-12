@@ -28,6 +28,7 @@ type Permission = ContentWrite
 
 type Job = {
     Id: string
+    Name: string option
     Permissions: Set<Permission>
     Needs: ImmutableArray<string>
     Strategy: Strategy option
@@ -59,6 +60,7 @@ type Workflow = {
 }
 
 type JobCreationCommand =
+    | Name of string
     | AddPermissions of Permission
     | Needs of string
     | RunsOn of string
@@ -81,6 +83,7 @@ let private addTrigger wf = function
 let private createJob id commands =
     let mutable job = {
         Id = id
+        Name = None
         Strategy = None
         Permissions = Set.empty
         Needs = ImmutableArray.Empty
@@ -91,6 +94,7 @@ let private createJob id commands =
     for command in commands do
         job <-
             match command with
+            | Name n -> { job with Name = Some n }
             | AddPermissions p -> { job with Permissions = Set.add p job.Permissions }
             | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
@@ -144,6 +148,8 @@ type Commands =
     static member job (id: string) (commands: JobCreationCommand seq): WorkflowCreationCommand =
         AddJob(createJob id commands)
 
+    static member jobName(name: string): JobCreationCommand =
+        Name name
     static member writeContentPermissions: JobCreationCommand =
         AddPermissions(ContentWrite)
     static member needs(jobId: string): JobCreationCommand =

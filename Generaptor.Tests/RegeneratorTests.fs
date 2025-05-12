@@ -8,9 +8,30 @@ open TruePath
 open VerifyXunit
 open Xunit
 
-let InitializeVerify() =
+let private InitializeVerify() =
     Environment.SetEnvironmentVariable("DiffEngine_Disabled", "true")
     Environment.SetEnvironmentVariable("Verify_DisableClipboard", "true")
+
+let private DoTest(files: (string * string) seq): Task =
+    let tempDir =
+        let path = Path.GetTempFileName()
+        File.Delete path
+        Directory.CreateDirectory path |> ignore
+        AbsolutePath path
+    try
+        for fileName, fileContent in files do
+            let filePath = tempDir / fileName
+            File.WriteAllText(filePath.Value, fileContent)
+        let actualScript =
+            ScriptGenerator.GenerateFrom(LocalPath tempDir)
+                .Replace(
+                    $"nuget: Generaptor.Library, {ScriptGenerator.PackageVersion}",
+                    "nuget: Generaptor.Library, <GENERAPTOR_VERSION>")
+
+        InitializeVerify()
+        Verifier.Verify(actualScript, extension = "fsx").ToTask()
+    finally
+        Directory.Delete(tempDir.Value, true)
 
 [<Fact>]
 let BasicRegeneratorWorkflow(): Task =
@@ -97,22 +118,26 @@ jobs:
           ./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg
 """
     |]
-    let tempDir =
-        let path = Path.GetTempFileName()
-        File.Delete path
-        Directory.CreateDirectory path |> ignore
-        AbsolutePath path
-    try
-        for fileName, fileContent in files do
-            let filePath = tempDir / fileName
-            File.WriteAllText(filePath.Value, fileContent)
-        let actualScript =
-            ScriptGenerator.GenerateFrom(LocalPath tempDir)
-                .Replace(
-                    $"nuget: Generaptor.Library, {ScriptGenerator.PackageVersion}",
-                    "nuget: Generaptor.Library, <GENERAPTOR_VERSION>")
+    DoTest files
 
-        InitializeVerify()
-        Verifier.Verify(actualScript, extension = "fsx").ToTask()
-    finally
-        Directory.Delete(tempDir.Value, true)
+[<Fact>]
+let StrategyGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  main:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - name: 'macos'
+            image: 'macos-14'
+          - name: 'linux'
+            image: 'ubuntu-24.04'
+          - name: 'windows'
+            image: 'windows-2022'
+
+    name: main.${{ matrix.config.name }}
+"""
+    ]
+    DoTest files

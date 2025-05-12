@@ -107,3 +107,40 @@ jobs:
       fail-fast: false
 """
     doTest expected wf
+
+[<Fact>]
+let ``Complex trategy test``(): unit =
+    let wf = workflow "wf" [
+        job "main" [|
+            strategy(matrix = [|
+                "config", [
+                    Map.ofList [
+                        "name", "macos"
+                        "image", "macos-latest"
+                    ]
+                    Map.ofList [
+                        "name", "linux"
+                        "image", "ubuntu-24.04"
+                    ]
+                    Map.ofList [
+                        "name", "windows"
+                        "image", "windows-2022"
+                    ]
+                ]
+            |])
+        |]
+    ]
+    let expected = """on: {}
+jobs:
+  main:
+    strategy:
+      matrix:
+        config:
+        - image: macos-latest
+          name: macos
+        - image: ubuntu-24.04
+          name: linux
+        - image: windows-2022
+          name: windows
+"""
+    doTest expected wf
