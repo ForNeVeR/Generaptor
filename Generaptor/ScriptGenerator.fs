@@ -20,6 +20,11 @@ let private StringLiteral(x: obj) =
     let s = s.Replace("\"", "\\\"").Replace("\n", "\\n")
     $"\"{s}\""
 
+let private Indent(spaces: int) () = String(' ', spaces)
+
+let private AddIndent(existing: unit -> string, level: int) (): string =
+    existing() + String(' ', level)
+
 let private SerializeOn(data: Dictionary<obj, obj>): string =
     let builder = StringBuilder()
     let append v = builder.AppendLine $"        {v}" |> ignore
@@ -59,25 +64,29 @@ let private SerializeOn(data: Dictionary<obj, obj>): string =
     builder.ToString()
 
 let private SerializeStrategyMatrix (m: IDictionary) =
-    let rec serializeItem(item: obj) =
+    let rec serializeItem(item: obj, indent: unit -> string) =
         let builder = StringBuilder()
-        let append (x: string) = builder.Append x |> ignore
+        let append(x: string) = builder.Append x |> ignore
         match item with
-        | :? string as s -> append <| StringLiteral s
+        | :? string as s -> append $"{indent()}{StringLiteral s}"
+        | :? Dictionary<obj, obj> as map ->
+            append $"{indent()}Map.ofList [\n"
+            for kvp in map do
+                append $"{indent()}    {StringLiteral kvp.Key}, {StringLiteral kvp.Value}\n"
+            append $"{indent()}]"
         | :? IEnumerable as collection ->
-            append "["
+            append "[\n"
             for x in collection do
-                append $"\n                    {serializeItem x}"
-            append "\n                ]"
+                append $"{serializeItem(x, AddIndent(indent, 4))}\n"
+            append $"{indent()}]"
         | unknown -> failwithf $"Unknown element of strategy's matrix: \"{unknown}\"."
         builder.ToString()
 
-    let builder = StringBuilder().Append("[")
+    let builder = StringBuilder().AppendLine("[")
     let append (x: string) = builder.Append x |> ignore
     for kvp in m do
         let kvp = kvp :?> DictionaryEntry
-        append $"\n                \"{kvp.Key}\", {serializeItem kvp.Value}"
-    if m.Count > 0 then append "\n"
+        append $"                \"{kvp.Key}\", {serializeItem(kvp.Value, Indent 16)}\n"
     builder.Append("            ]").ToString()
 
 let private SerializeStrategy(data: obj): string =
@@ -112,8 +121,6 @@ let private SerializeEnv(data: obj, indent: unit -> string): string =
         let value = kvp.Value
         append $"setEnv {StringLiteral key} {StringLiteral value}"
     result.ToString()
-
-let private Indent(spaces: int) () = String(' ', spaces)
 
 let private SerializeOptions(map: obj, indent: unit -> string) =
     let map = map :?> Dictionary<obj, obj>
@@ -177,6 +184,7 @@ let private SerializeJobs(jobs: obj): string =
             let key = kvp.Key :?> string
             let value = kvp.Value
             match key with
+            | "name" -> append $"jobName {StringLiteral value}"
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runsOn {StringLiteral value}"
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore

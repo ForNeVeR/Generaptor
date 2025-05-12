@@ -3,6 +3,7 @@
 
 // In this repository, since we are developing Generaptor and cannot rely on NuGet, we have to add these three.
 #r "nuget: YamlDotNet, 15.1.1"
+#r "nuget: TruePath, 1.2.1"
 #r "Generaptor.Library/bin/Debug/net8.0/generaptor.library.dll"
 #r "Generaptor.Library/bin/Debug/net8.0/generaptor.dll"
 
