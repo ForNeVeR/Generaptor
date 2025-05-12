@@ -19,10 +19,29 @@ let workflows = [
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
             step(
-              uses = "actions/checkout@v4"
+                uses = "actions/checkout@v4"
             )
-            yield! dotNetBuildAndTest()
-        ] |> addMatrix images
+            step(
+                name = "Set up .NET SDK"
+                uses = "actions/setup-dotnet@v4"
+                options = Map.ofList [
+                    "dotnet-version", "8.0.x"
+                ]
+            )
+            step(
+                name = "NuGet cache"
+                uses = "actions/cache@v4"
+                options = Map.ofList [
+                    "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
+                    "path", "${{ env.NUGET_PACKAGES }}"
+                ]
+            )
+            step(
+                name = "Test"
+                run = "dotnet test"
+                timeoutMin = 10
+            )
+        ]
     ]
     workflow "release" [
         name "Release"
