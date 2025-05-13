@@ -226,6 +226,7 @@ let GenerateFrom(workflowDirectory: LocalPath): string =
     let files = Directory.GetFiles(workflowDirectory.Value, "*.yml") |> Seq.map LocalPath
     let workflows =
         files
+        |> Seq.sortBy _.Value
         |> Seq.map(fun path ->
             let name = path.GetFilenameWithoutExtension()
             let content = ParseYaml path
