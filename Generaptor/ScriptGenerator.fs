@@ -122,7 +122,7 @@ let private SerializeEnv(data: obj, indent: unit -> string): string =
         append $"setEnv {StringLiteral key} {StringLiteral value}"
     result.ToString()
 
-let private SerializeOptions(map: obj, indent: unit -> string) =
+let private SerializeStringMap(map: obj, indent: unit -> string) =
     let map = map :?> Dictionary<obj, obj>
     let result = StringBuilder().AppendLine("Map.ofList [")
     for kvp in map do
@@ -136,21 +136,30 @@ let private SerializeSteps(data: obj, indent: unit -> string): string =
     for step in data do
         let step = step :?> Dictionary<obj, obj>
         append "step("
+        let mutable first = true
         for kvp in step do
             let key = kvp.Key :?> string
             let value = kvp.Value
+            let appendArg k v =
+                if first then
+                    first <- false
+                    builder.Append $"{indent()}    {k} = {v}"
+                else
+                    builder.Append $",\n{indent()}    {k} = {v}"
+                |> ignore
+
             match key with
-            | "if" -> append $"    if = {StringLiteral value}"
-            | "id" -> append $"    id = {StringLiteral value}"
-            | "name" -> append $"    name = {StringLiteral value}"
-            | "uses" -> append $"    uses = {StringLiteral value}"
-            | "shell" -> append $"    shell = {StringLiteral value}"
-            | "run" -> append $"    run = {StringLiteral value}"
-            | "with" -> append $"    options = {SerializeOptions(value, Indent 16)}"
-            | "env" -> append $"    env = {SerializeEnv(value, Indent 2)}"
-            | "timeout-minutes" -> append $"    timeoutMin = {value}"
+            | "if" -> appendArg "condition" <| StringLiteral value
+            | "id" -> appendArg "id" <| StringLiteral value
+            | "name" -> appendArg "name" <| StringLiteral value
+            | "uses" -> appendArg "uses" <| StringLiteral value
+            | "shell" -> appendArg "shell" <| StringLiteral value
+            | "run" -> appendArg "run" <| StringLiteral value
+            | "with" -> appendArg "options" <| SerializeStringMap(value, Indent 16)
+            | "env" -> appendArg "env" <| SerializeStringMap(value, Indent 16)
+            | "timeout-minutes" -> appendArg "timeoutMin" value
             | other -> failwithf $"Unknown key in the 'steps' section: \"{other}\"."
-        append ")"
+        builder.AppendLine $"\n{indent()})" |> ignore
     builder.ToString()
 
 let private SerializePermissions(value: obj, indent: unit -> string) =

@@ -141,3 +141,24 @@ jobs:
 """
     ]
     DoTest files
+
+[<Fact>]
+let StepEnvGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  main:
+    steps:
+      - name: Create release
+        if: startsWith(github.ref, 'refs/tags/v')
+        id: release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: ChangelogAutomation v${{ steps.version.outputs.version }}
+          body_path: ./release-data.md
+"""
+    ]
+    DoTest files
