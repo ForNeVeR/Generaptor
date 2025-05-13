@@ -229,6 +229,9 @@ let GenerateFrom(workflowDirectory: LocalPath): string =
         )
         |> String.concat "\n"
     $"""#r "nuget: Generaptor.Library, {PackageVersion}"
+open Generaptor
+open Generaptor.GitHubActions
+open type Generaptor.GitHubActions.Commands
 let workflows = [
 {workflows}
 ]
