@@ -22,23 +22,23 @@ let workflows = [
                 uses = "actions/checkout@v4"
             )
             step(
-                name = "Set up .NET SDK"
-                uses = "actions/setup-dotnet@v4"
+                name = "Set up .NET SDK",
+                uses = "actions/setup-dotnet@v4",
                 options = Map.ofList [
                     "dotnet-version", "8.0.x"
                 ]
             )
             step(
-                name = "NuGet cache"
-                uses = "actions/cache@v4"
+                name = "NuGet cache",
+                uses = "actions/cache@v4",
                 options = Map.ofList [
                     "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
                     "path", "${{ env.NUGET_PACKAGES }}"
                 ]
             )
             step(
-                name = "Test"
-                run = "dotnet test"
+                name = "Test",
+                run = "dotnet test",
                 timeoutMin = 10
             )
         ]
@@ -57,24 +57,24 @@ let workflows = [
                 uses = "actions/checkout@v4"
             )
             step(
-                id = "version"
-                name = "Get version"
-                shell = "pwsh"
+                id = "version",
+                name = "Get version",
+                shell = "pwsh",
                 run = "echo \"version=$(Scripts/Get-Version.ps1 -RefName $env:GITHUB_REF)\" >> $env:GITHUB_OUTPUT"
             )
             step(
                 run = "dotnet pack --configuration Release -p:Version=${{ steps.version.outputs.version }}"
             )
             step(
-                name = "Read changelog"
-                uses = "ForNeVeR/ChangelogAutomation.action@v1"
+                name = "Read changelog",
+                uses = "ForNeVeR/ChangelogAutomation.action@v1",
                 options = Map.ofList [
                     "output", "./release-notes.md"
                 ]
             )
             step(
-                name = "Upload artifacts"
-                uses = "actions/upload-artifact@v4"
+                name = "Upload artifacts",
+                uses = "actions/upload-artifact@v4",
                 options = Map.ofList [
                     "path", "./release-notes.md\n./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.nupkg\n./Generaptor/bin/Release/Generaptor.${{ steps.version.outputs.version }}.snupkg\n./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.nupkg\n./Generaptor.Library/bin/Release/Generaptor.Library.${{ steps.version.outputs.version }}.snupkg"
                 ]
