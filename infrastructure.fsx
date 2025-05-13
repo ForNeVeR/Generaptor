@@ -1,7 +1,7 @@
 // In the actual integration, you'll only need the one line below and no other references.
 //#r "nuget: Generaptor.Library, 1.1.0"
 
-// In this repository, since we are developing Generaptor and cannot rely on NuGet, we have to add these three.
+// In this repository, since we are developing Generaptor and cannot rely on NuGet, we have to add these four.
 #r "nuget: YamlDotNet, 15.1.1"
 #r "nuget: TruePath, 1.2.1"
 #r "Generaptor.Library/bin/Debug/net8.0/generaptor.library.dll"
