@@ -25,7 +25,7 @@ let private DoTest(files: (string * string) seq): Task =
         let actualScript =
             ScriptGenerator.GenerateFrom(LocalPath tempDir)
                 .Replace(
-                    $"nuget: Generaptor.Library, {ScriptGenerator.PackageVersion}",
+                    $"nuget: Generaptor.Library, {ScriptGenerator.PackageVersion()}",
                     "nuget: Generaptor.Library, <GENERAPTOR_VERSION>")
 
         InitializeVerify()
