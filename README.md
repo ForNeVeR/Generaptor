@@ -10,7 +10,6 @@ NuGet package links:
 - [![Generaptor][nuget.badge.generaptor]][nuget.generaptor]
 - [![Generaptor.Library][nuget.badge.generaptor-library]][nuget.generaptor-library]
 
-
 Showcase
 --------
 Consider this F# program (this is actually used in this very repository):
@@ -104,7 +103,7 @@ This integration is useful if you already have a solution file, and it's more co
    $ dotnet run --project ./Infrastructure/GitHubActions
    ```
 
-   When called with empty arguments of with command `generate`, it will (re-)generate the workflow files in `.github/workflows` folder, relatively to the current directory.
+   See the **Command-Line Arguments** section for more details.
 
 ### Script File
 As an alternative execution mode, we also support execution from an F# script file.
@@ -150,7 +149,12 @@ let workflows = [
 EntryPoint.Process fsi.CommandLineArgs workflows
 ```
 
-### Available Features
+### Command-Line Arguments
+Generaptor supports the following command-line arguments:
+- no arguments or `generate` — (re-)generate the workflow files in the `.github/workflows` folder, relatively to the current directory;
+- `regenerate [path to fsx file]` — generate the `.fsx` script file from the `.yml` workflows in the repository (the `.github/workflows` folder, relative to the current directory).
+
+### Library Features
 For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
 
 For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
