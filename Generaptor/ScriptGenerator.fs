@@ -4,12 +4,16 @@ open System
 open System.Collections.Generic
 open System.Collections
 open System.IO
+open System.Reflection
+open System.Runtime.CompilerServices
 open System.Text
 open TruePath
 open YamlDotNet.Serialization
 
-// Auto-updated by /Scripts/Update-Version.ps1
-let PackageVersion = "1.2.0" // TODO: Just pick this from the assembly?
+[<MethodImpl(MethodImplOptions.NoInlining)>]
+let PackageVersion(): string =
+    let assembly = Assembly.GetExecutingAssembly()
+    assembly.GetName().Version.ToString 3
 
 let private ParseYaml(file: LocalPath): Dictionary<string, obj> =
     let deserializer = DeserializerBuilder().Build()
@@ -228,7 +232,7 @@ let GenerateFrom(workflowDirectory: LocalPath): string =
             SerializeWorkflow name content
         )
         |> String.concat "\n"
-    $"""#r "nuget: Generaptor.Library, {PackageVersion}"
+    $"""#r "nuget: Generaptor.Library, {PackageVersion()}"
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
