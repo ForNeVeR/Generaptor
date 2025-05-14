@@ -8,6 +8,7 @@
 
     <ItemGroup>
         <Compile Include="GitHubActions.fs" />
+        <Compile Include="ActionsClient.fs" />
         <Compile Include="Serializers.fs" />
         <Compile Include="ScriptGenerator.fs" />
         <Compile Include="EntryPoint.fs" />
@@ -16,6 +17,7 @@
 
     <ItemGroup>
       <PackageReference Include="ChangelogAutomation.MSBuild" Version="2.0.0" PrivateAssets="All" />
+      <PackageReference Include="Octokit" Version="14.0.0" />
       <PackageReference Include="TruePath" Version="1.2.1" />
       <PackageReference Include="YamlDotNet" Version="15.1.1" />
     </ItemGroup>

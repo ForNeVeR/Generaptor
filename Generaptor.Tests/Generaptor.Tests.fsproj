@@ -8,6 +8,7 @@
     </PropertyGroup>
 
     <ItemGroup>
+        <Compile Include="ActionsClientTests.fs" />
         <Compile Include="GeneratorTests.fs" />
         <Compile Include="RegeneratorTests.fs" />
         <None Include="*.verified.fsx"/>

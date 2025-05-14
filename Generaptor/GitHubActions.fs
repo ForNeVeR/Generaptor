@@ -26,6 +26,10 @@ type TriggerCreationCommand =
 
 type Permission = ContentWrite
 
+type ActionSpec =
+    | ActionWithVersion of nameWithVersion: string
+    | Auto of name: string
+
 type Job = {
     Id: string
     Name: string option
@@ -44,7 +48,7 @@ and Step = {
     Condition: string option
     Id: string option
     Name: string option
-    UsesAction: string option
+    Uses: ActionSpec option
     Shell: string option
     Run: string option
     Options: Map<string, string>
@@ -162,16 +166,24 @@ type Commands =
                        ?condition: string,
                        ?name: string,
                        ?uses: string,
+                       ?usesSpec: ActionSpec,
                        ?shell: string,
                        ?run: string,
                        ?options: Map<string, string>,
                        ?env: Map<string, string>,
                        ?timeoutMin: int): JobCreationCommand =
+        let actionSpec =
+            match uses, usesSpec with
+            | Some nameWithVersion, None -> Some <| ActionWithVersion nameWithVersion
+            | None, Some spec -> Some spec
+            | None, None -> None
+            | Some nameWithVersion, Some spec ->
+                failwithf $"Invalid action spec: both {nameWithVersion} and {spec} are specified."
         AddStep {
             Condition = condition
             Id = id
             Name = name
-            UsesAction = uses
+            Uses = actionSpec
             Shell = shell
             Run = run
             Options = defaultArg options Map.empty
