@@ -10,7 +10,7 @@ type ActionVersion = ActionVersion of string
 type IActionsClient =
     abstract member GetLastActionVersion: ownerAndName: string -> Task<ActionVersion>
 
-type private NumericVersion =
+type internal NumericVersion =
     | NumericVersion of major: int * minor: int option * patch: int option
 
     member this.Major = let (NumericVersion(m, _, _)) = this in m

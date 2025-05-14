@@ -46,7 +46,7 @@ let private getActionUsesSpec (existingVersions: Map<string, ActionVersion>, cli
                 | None -> client.GetLastActionVersion name
 
             let (ActionVersion versionString) = version
-            return versionString
+            return $"{name}@{versionString}"
         }).GetAwaiter().GetResult()
 
 let private convertSteps(steps, existingVersions, client) =
@@ -115,7 +115,57 @@ let private convertWorkflow(wf: Workflow, existingVersions, client) =
     map.Add("jobs", convertJobs(wf.Jobs, existingVersions, client))
     map
 
-let ExtractVersions(content: string): Map<string, ActionVersion> = failwithf "TODO"
+let ExtractVersions(content: string): Map<string, ActionVersion> =
+    let document =
+        let deserializer = DeserializerBuilder().Build()
+        deserializer.Deserialize<Dictionary<string, obj>> content
+    let getValue (m: obj) k =
+        match m with
+        | :? Dictionary<string, obj> as m ->m.GetValueOrDefault k |> Option.ofObj
+        | _ -> None
+    let getSubdictionary m k =
+        match getValue m k with
+        | Some(:? Dictionary<string, obj> as s) -> Some s
+        | _ -> None
+    let jobs =
+        getSubdictionary document "jobs"
+        |> Option.map(fun x -> x.Values :> obj seq)
+        |> Option.defaultValue Seq.empty
+    let allSteps = jobs |> Seq.collect (fun j ->
+        getValue j "steps"
+        |> Option.bind(function | :? seq<obj> as s -> Some s | _ -> None)
+        |> Option.defaultValue Seq.empty
+    )
+    let allUsesClauses =
+        allSteps
+        |> Seq.choose(fun s ->
+            match s with
+            | :? Dictionary<string, obj> as d ->
+                match d.GetValueOrDefault "uses" with
+                | :? string as u -> Some u
+                | _ -> None
+            | _ -> None
+        )
+    allUsesClauses
+    |> Seq.choose(fun v -> match v.Split('@', 2) with | [| n; v |] -> Some(n, v) | _ -> None)
+    |> Seq.groupBy fst
+    |> Seq.map(fun(k, xs) -> k, Seq.map snd xs)
+    |> Seq.map(fun (name, allVersions) ->
+        let distinctVersions = Seq.distinct allVersions |> Array.ofSeq
+        let version =
+            match distinctVersions.Length with
+            | 1 -> Array.exactlyOne distinctVersions
+            | _ -> distinctVersions
+                   |> Seq.choose(fun v -> NumericVersion.TryParse v |> Option.map (fun n -> v, n))
+                   |> Seq.sortByDescending snd
+                   |> Seq.map fst
+                   |> Seq.tryHead
+                   |> Option.defaultWith(
+                       fun() -> failwithf $"Cannot determine any parseable version for action {name}."
+                    )
+        name, ActionVersion version
+    )
+    |> Map.ofSeq
 
 let Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
     let serializer =
