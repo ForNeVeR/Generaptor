@@ -154,6 +154,27 @@ Generaptor supports the following command-line arguments:
 - no arguments or `generate` — (re-)generate the workflow files in the `.github/workflows` folder, relatively to the current directory;
 - `regenerate [path to fsx file]` — generate the `.fsx` script file from the `.yml` workflows in the repository (the `.github/workflows` folder, relative to the current directory).
 
+### Automatic Version Extraction
+For cases when you manage your action versions separately (using tools like Dependabot or Renovate), you can set up Generaptor to read the action versions from your YAML definitions. This way, it will read the versions, then regenerate the file, and apply the versions read previously — thus preserving the flow you have with external tools.
+
+To use it, define steps using the `Auto` notation:
+```fsharp
+let workflows = [
+    workflow "main" [
+        job "main" [
+            // Obsolete way, will not auto-update:
+            // step(uses = "actions/checkout@v4")
+            // New way, will work well with external update:
+            step(usesSpec = Auto "actions/checkout")
+        ]
+    ]
+]
+```
+
+`Auto` notation will try to guess the latest used major action version from the corresponding `.yml` file; failing that, will find the latest used minor version, and failing that — will fetch the latest version from the corresponding action's repository.
+
+It supports version tags in form of `[v]X[.Y[.Z]]`, where X, Y, and Z are numbers.
+
 ### Library Features
 For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
 

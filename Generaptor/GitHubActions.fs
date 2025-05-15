@@ -28,6 +28,8 @@ type Permission = ContentWrite
 
 type ActionSpec =
     | ActionWithVersion of nameWithVersion: string
+    /// This will read the highest major action version from the YAML file if it exists. If not found, will fall back
+    /// to the latest available action tag on GitHub.
     | Auto of name: string
 
 type Job = {
