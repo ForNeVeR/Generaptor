@@ -210,7 +210,23 @@ jobs:
     - uses: ForNeVeR/ChangelogAutomation@v3
     - uses: ForNeVeR/ChangelogAutomation@nonsense
 """
-    Assert.Equivalent(Map.ofArray [| "ForNeVeR/ChangelogAutomation", "v3" |], Serializers.ExtractVersions existing)
+    Assert.Equivalent(
+        Map.ofArray [| "ForNeVeR/ChangelogAutomation", ActionVersion "v3" |],
+        Serializers.ExtractVersions existing
+    )
+
+[<Fact>]
+let ``Unparseable version ok with no alternative``(): unit =
+    let existing = """on: {}
+jobs:
+  main:
+    steps:
+    - uses: ForNeVeR/ChangelogAutomation@nonsense
+"""
+    Assert.Equivalent(
+        Map.ofArray [| "ForNeVeR/ChangelogAutomation", ActionVersion "nonsense" |],
+        Serializers.ExtractVersions existing
+    )
 
 [<Fact>]
 let ``Unparseable version error``(): unit =
@@ -218,7 +234,8 @@ let ``Unparseable version error``(): unit =
 jobs:
   main:
     steps:
-    - uses: ForNeVeR/ChangelogAutomation@nonsense
+    - uses: ForNeVeR/ChangelogAutomation@nonsense1
+    - uses: ForNeVeR/ChangelogAutomation@nonsense2
 """
     let ex = Assert.Throws(fun() -> Serializers.ExtractVersions existing |> ignore)
     Assert.Equal("Cannot determine any parseable version for action ForNeVeR/ChangelogAutomation.", ex.Message)

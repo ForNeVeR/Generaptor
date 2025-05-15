@@ -1,5 +1,6 @@
 ﻿module internal Generaptor.Serializers
 
+open System.Collections
 open System.Collections.Generic
 
 open System.Threading.Tasks
@@ -121,15 +122,15 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
         deserializer.Deserialize<Dictionary<string, obj>> content
     let getValue (m: obj) k =
         match m with
-        | :? Dictionary<string, obj> as m ->m.GetValueOrDefault k |> Option.ofObj
+        | :? IDictionary as m when m.Contains k -> Some m[k]
         | _ -> None
     let getSubdictionary m k =
         match getValue m k with
-        | Some(:? Dictionary<string, obj> as s) -> Some s
+        | Some(:? IDictionary as s) -> Some s
         | _ -> None
     let jobs =
         getSubdictionary document "jobs"
-        |> Option.map(fun x -> x.Values :> obj seq)
+        |> Option.map(fun x -> x.Values |> Seq.cast<obj>)
         |> Option.defaultValue Seq.empty
     let allSteps = jobs |> Seq.collect (fun j ->
         getValue j "steps"
@@ -140,8 +141,8 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
         allSteps
         |> Seq.choose(fun s ->
             match s with
-            | :? Dictionary<string, obj> as d ->
-                match d.GetValueOrDefault "uses" with
+            | :? IDictionary as d when d.Contains "uses" ->
+                match d["uses"] with
                 | :? string as u -> Some u
                 | _ -> None
             | _ -> None
@@ -162,7 +163,7 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
                    |> Seq.tryHead
                    |> Option.defaultWith(
                        fun() -> failwithf $"Cannot determine any parseable version for action {name}."
-                    )
+                   )
         name, ActionVersion version
     )
     |> Map.ofSeq
