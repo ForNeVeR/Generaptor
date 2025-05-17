@@ -152,6 +152,7 @@ EntryPoint.Process fsi.CommandLineArgs workflows
 ### Command-Line Arguments
 Generaptor supports the following command-line arguments:
 - no arguments or `generate` — (re-)generate the workflow files in the `.github/workflows` folder, relatively to the current directory;
+- `verify` — read the current workflows form `.github/workflows` and compare them with the script contents. If any are different, print diagnostic message and exit with non-zero exit code.
 - `regenerate [path to fsx file]` — generate the `.fsx` script file from the `.yml` workflows in the repository (the `.github/workflows` folder, relative to the current directory).
 
 ### Automatic Version Extraction
@@ -181,6 +182,21 @@ For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions
 For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
 
 Feel free to create your own actions and patterns, and either send a PR to this repository, or publish your own NuGet packages!
+
+### GitHub Actions Usage
+Example usage to set up script verification on CI:
+```yaml
+jobs:
+  verify-workflows:
+    runs-on: ubuntu-latest
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-dotnet@v4
+      - run: dotnet run fsi scripts/github-actions.fsx verify
+```
 
 Documentation
 -------------

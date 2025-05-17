@@ -11,6 +11,7 @@
         <Compile Include="ActionsClient.fs" />
         <Compile Include="Serializers.fs" />
         <Compile Include="ScriptGenerator.fs" />
+        <Compile Include="Verifier.fs" />
         <Compile Include="EntryPoint.fs" />
         <Compile Include="AssemblyInfo.fs" />
     </ItemGroup>

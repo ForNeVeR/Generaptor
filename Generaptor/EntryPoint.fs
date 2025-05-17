@@ -17,19 +17,9 @@ let private generateWorkflows(workflows: Workflow seq): Task =
     task {
         for wf in workflows do
             Directory.CreateDirectory dir.Value |> ignore
-
-            let id = wf.Id
-            let path = dir / (id + ".yml")
-            printfn $"Generating workflow {id}"
-            let! existingVersions =
-                if File.Exists path.Value
-                then task {
-                    let! content = File.ReadAllTextAsync path.Value
-                    return Serializers.ExtractVersions content
-                }
-                else Task.FromResult Map.empty
-            let content = Serializers.Stringify wf existingVersions actionsClient
-            do! File.WriteAllTextAsync(path.Value, "# This file is auto-generated.\n" + content)
+            let yaml = dir / (wf.Id + ".yml")
+            let! content = Serializers.GenerateWorkflowContent(yaml, wf, actionsClient)
+            do! File.WriteAllTextAsync(yaml.Value, "# This file is auto-generated.\n" + content)
     }
 
 let private regenerate(fileName: LocalPath) =
@@ -40,11 +30,27 @@ let private regenerate(fileName: LocalPath) =
 let private runSynchronously(t: Task) =
     t.GetAwaiter().GetResult()
 
+module ExitCodes =
+    let Success = 0
+    let ArgumentsNotRecognized = 1
+    let VerificationError = 2
+
+let private Verify workflows =
+    (task {
+        let actionsClient = ActionsClient()
+        let dir = LocalPath ".github/workflows"
+        let! result = Verifier.VerifyWorkflows(dir, workflows, actionsClient)
+        for error in result.Errors do
+            eprintfn $"%s{error}"
+        return if result.Success then ExitCodes.Success else ExitCodes.VerificationError
+    }).GetAwaiter().GetResult()
+
 let Process(args: string seq) (workflows: Workflow seq): int =
     let args = Seq.toArray args
     match args with
-    | [||] | [|"generate"|] -> runSynchronously <| generateWorkflows workflows; 0
-    | [|x|] | [|x;"generate"|] when x.EndsWith(".fsx") -> runSynchronously <| generateWorkflows workflows; 0
-    | [|"regenerate"; fileName|] -> regenerate(LocalPath fileName); 0
-    | [|x; "regenerate"; fileName|] when x.EndsWith(".fsx") -> regenerate(LocalPath fileName); 0
-    | _ -> printUsage(); 1
+    | [||] | [|"generate"|] -> runSynchronously <| generateWorkflows workflows; ExitCodes.Success
+    | [|x|] | [|x;"generate"|] when x.EndsWith(".fsx") ->
+        runSynchronously <| generateWorkflows workflows; ExitCodes.Success
+    | [|"regenerate"; fileName|] -> regenerate(LocalPath fileName); ExitCodes.Success
+    | [|"verify"|] -> Verify workflows
+    | _ -> printUsage(); ExitCodes.ArgumentsNotRecognized

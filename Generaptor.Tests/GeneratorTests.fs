@@ -1,29 +1,18 @@
 module Generaptor.Tests.GeneratorTests
 
-open System.Threading.Tasks
 open Xunit
 
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
 
-let private mockClient = {
-    new IActionsClient with
-        member this.GetLastActionVersion(ownerAndName) =
-            Task.FromResult(
-                match ownerAndName with
-                | "ForNeVeR/ChangelogAutomation.action" -> ActionVersion "v10"
-                | _ -> failwithf $"Not allowed to fetch action version for {ownerAndName}."
-            )
-}
-
 let private doTest (expected: string) wf =
-    let actual = Serializers.Stringify wf Map.empty mockClient
+    let actual = Serializers.Stringify wf Map.empty TestFramework.MockActionsClient
     Assert.Equal(expected.ReplaceLineEndings "\n", actual)
 
 let private doTestOnExistingWorkflow (existing: string) (expected: string) wf =
     let existingVersions = Serializers.ExtractVersions existing
-    let actual = Serializers.Stringify wf existingVersions mockClient
+    let actual = Serializers.Stringify wf existingVersions TestFramework.MockActionsClient
     Assert.Equal(expected.ReplaceLineEndings "\n", actual)
 
 [<Fact>]

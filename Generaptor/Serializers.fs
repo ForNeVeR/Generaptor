@@ -3,7 +3,9 @@
 open System.Collections
 open System.Collections.Generic
 
+open System.IO
 open System.Threading.Tasks
+open TruePath
 open YamlDotNet.Core
 open YamlDotNet.Serialization
 open YamlDotNet.Serialization.EventEmitters
@@ -168,7 +170,7 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
     )
     |> Map.ofSeq
 
-let Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
+let internal Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
     let serializer =
         SerializerBuilder()
             .WithNewLine("\n")
@@ -183,3 +185,15 @@ let Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (clie
             .Build()
     let data = convertWorkflow(wf, existingVersions, client)
     serializer.Serialize data
+
+let GenerateWorkflowContent(yaml: LocalPath, wf: Workflow, client: IActionsClient): Task<string> = task {
+    printfn $"Generating workflow {wf.Id}…"
+    let! existingVersions =
+        if File.Exists yaml.Value
+        then task {
+            let! content = File.ReadAllTextAsync yaml.Value
+            return ExtractVersions content
+        }
+        else Task.FromResult Map.empty
+    return Stringify wf existingVersions client
+}

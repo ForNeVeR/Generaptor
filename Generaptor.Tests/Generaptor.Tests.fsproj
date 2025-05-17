@@ -9,8 +9,10 @@
 
     <ItemGroup>
         <Compile Include="ActionsClientTests.fs" />
+        <Compile Include="TestFramework.fs" />
         <Compile Include="GeneratorTests.fs" />
         <Compile Include="RegeneratorTests.fs" />
+        <Compile Include="VerifierTests.fs" />
         <None Include="*.verified.fsx"/>
     </ItemGroup>
 

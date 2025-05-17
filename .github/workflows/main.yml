@@ -9,7 +9,7 @@ on:
     - main
   schedule:
   - cron: 0 0 * * 6
-  workflow_dispatch: 
+  workflow_dispatch:
 jobs:
   main:
     strategy:
@@ -40,3 +40,17 @@ jobs:
     - name: Test
       run: dotnet test
       timeout-minutes: 10
+  verify-workflows:
+    runs-on: ubuntu-24.04
+    env:
+      DOTNET_CLI_TELEMETRY_OPTOUT: 1
+      DOTNET_NOLOGO: 1
+      NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
+    steps:
+    - uses: actions/checkout@v4
+    - uses: actions/setup-dotnet@v4
+    - uses: actions/cache@v4
+      with:
+        key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
+        path: ${{ env.NUGET_PACKAGES }}
+    - run: dotnet run --project Infrastructure/GitHubActions -- verify
