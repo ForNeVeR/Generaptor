@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2025 Friedrich von Never <friedrich@fornever.me>
+//
+// SPDX-License-Identifier: MIT
+
 module Generaptor.Tests.TestFramework
 
 open System.Threading.Tasks

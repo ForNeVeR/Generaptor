@@ -1,3 +1,7 @@
+// SPDX-FileCopyrightText: 2024-2025 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
+//
+// SPDX-License-Identifier: MIT
+
 module Generaptor.EntryPoint
 
 open System.IO

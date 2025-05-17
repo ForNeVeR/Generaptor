@@ -1,3 +1,9 @@
+<!--
+SPDX-FileCopyrightText: 2024-2025 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
+
+SPDX-License-Identifier: MIT
+-->
+
 🦖 Generaptor [![Status Ventis][status-ventis]][andivionian-status-classifier]
 ============
 

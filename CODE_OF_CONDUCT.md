@@ -1,3 +1,8 @@
+<!--
+SPDX-FileCopyrightText: 2024 contributor_covenant contributors <https://github.com/EthicalSource/contributor_covenant>
+
+SPDX-License-Identifier: CC-BY-4.0
+-->
 
 # Contributor Covenant Code of Conduct
 

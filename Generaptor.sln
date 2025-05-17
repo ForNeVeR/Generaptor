@@ -14,6 +14,11 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		Directory.Build.props = Directory.Build.props
 		CHANGELOG.md = CHANGELOG.md
 		CONTRIBUTING.md = CONTRIBUTING.md
+		REUSE.toml = REUSE.toml
+		Generaptor.sln.license = Generaptor.sln.license
+		Generaptor.sln.DotSettings = Generaptor.sln.DotSettings
+		renovate.json = renovate.json
+		renovate.json.license = renovate.json.license
 	EndProjectSection
 EndProject
 Project("{F2A71F9B-5D33-465A-A702-920D77279786}") = "Generaptor", "Generaptor\Generaptor.fsproj", "{DECF408B-82A4-4EF2-971E-56840AA72F6D}"
@@ -37,6 +42,12 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Scripts", "Scripts", "{21699C58-41F1-459C-B993-A2F83846F62A}"
 	ProjectSection(SolutionItems) = preProject
 		Scripts\Get-Version.ps1 = Scripts\Get-Version.ps1
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "LICENSES", "LICENSES", "{3248E38A-4F37-4A23-9E28-C74B2F26C89F}"
+	ProjectSection(SolutionItems) = preProject
+		LICENSES\MIT.txt = LICENSES\MIT.txt
+		LICENSES\CC-BY-4.0.txt = LICENSES\CC-BY-4.0.txt
 	EndProjectSection
 EndProject
 Global

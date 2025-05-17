@@ -1,0 +1,22 @@
+version = 1
+SPDX-PackageName = "Generaptor"
+SPDX-PackageSupplier = "Generaptor contributors <https://github.com/ForNeVeR/Generaptor>"
+SPDX-PackageDownloadLocation = "https://github.com/ForNeVeR/Generaptor"
+
+[[annotations]]
+path = ".idea/**/**"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024-2025 Friedrich von Never <friedrich@fornever.me>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "**.DotSettings"
+precedence = "aggregate"
+SPDX-FileCopyrightText = "2024 Friedrich von Never <friedrich@fornever.me>"
+SPDX-License-Identifier = "MIT"
+
+[[annotations]]
+path = "Generaptor.Tests/*.verified.fsx"
+precedence = "override"
+SPDX-FileCopyrightText = "2025 Friedrich von Never <friedrich@fornever.me>"
+SPDX-License-Identifier = "MIT"
