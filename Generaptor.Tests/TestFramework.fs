@@ -1,4 +1,4 @@
-﻿module Generaptor.Tests.TestFramework
+module Generaptor.Tests.TestFramework
 
 open System.Threading.Tasks
 open Generaptor

@@ -1,4 +1,4 @@
-﻿namespace Generaptor
+namespace Generaptor
 
 open System
 open System.Globalization

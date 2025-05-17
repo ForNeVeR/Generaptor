@@ -1,4 +1,4 @@
-﻿module Generaptor.GitHubActions
+module Generaptor.GitHubActions
 
 open System
 open System.Collections.Immutable

@@ -1,4 +1,4 @@
-﻿open System
+open System
 
 open Generaptor
 open Generaptor.GitHubActions

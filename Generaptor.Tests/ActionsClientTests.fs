@@ -1,4 +1,4 @@
-﻿module Generaptor.Tests.ActionsClientTests
+module Generaptor.Tests.ActionsClientTests
 
 open System.Threading.Tasks
 open Generaptor

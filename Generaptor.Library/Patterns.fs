@@ -1,4 +1,4 @@
-﻿namespace Generaptor.Library
+namespace Generaptor.Library
 
 open Generaptor
 open Generaptor.GitHubActions

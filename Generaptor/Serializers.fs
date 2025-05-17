@@ -1,4 +1,4 @@
-﻿module internal Generaptor.Serializers
+module internal Generaptor.Serializers
 
 open System.Collections
 open System.Collections.Generic

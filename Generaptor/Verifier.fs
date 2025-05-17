@@ -1,4 +1,4 @@
-﻿module Generaptor.Verifier
+module Generaptor.Verifier
 
 open System.Collections.Generic
 open System.IO

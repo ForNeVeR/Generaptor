@@ -1,4 +1,4 @@
-﻿module Generaptor.ScriptGenerator
+module Generaptor.ScriptGenerator
 
 open System
 open System.Collections.Generic
