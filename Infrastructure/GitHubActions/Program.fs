@@ -7,11 +7,11 @@ open type Generaptor.Library.Actions
 open type Generaptor.Library.Patterns
 
 let mainBranch = "main"
-let linuxImage = "ubuntu-22.04"
+let linuxImage = "ubuntu-24.04"
 let images = [
-    "macos-12"
+    "macos-14"
     linuxImage
-    "windows-2022"
+    "windows-2025"
 ]
 
 let workflows = [
@@ -29,6 +29,29 @@ let workflows = [
             checkout
             yield! dotNetBuildAndTest()
         ] |> addMatrix images
+
+        job "verify-workflows" [
+            runsOn "ubuntu-24.04"
+            setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+            setEnv "DOTNET_NOLOGO" "1"
+            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+            step(
+                uses = "actions/checkout@v4"
+            )
+            step(
+                uses = "actions/setup-dotnet@v4"
+            )
+            step(
+                uses = "actions/cache@v4",
+                options = Map.ofList [
+                    "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
+                    "path", "${{ env.NUGET_PACKAGES }}"
+                ]
+            )
+            step(
+                run = "dotnet run --project Infrastructure/GitHubActions -- verify"
+            )
+        ]
     ]
     workflow "release" [
         name "Release"

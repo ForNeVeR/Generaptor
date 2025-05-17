@@ -22,7 +22,7 @@ type Actions =
     static member prepareChangelog(outputPath: string): JobCreationCommand =
         step(
             name = "Read changelog",
-            uses = "ForNeVeR/ChangelogAutomation.action@v1",
+            usesSpec = Auto "ForNeVeR/ChangelogAutomation.action",
             options = Map.ofList [
                 "output", outputPath
             ]

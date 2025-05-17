@@ -15,9 +15,9 @@ jobs:
     strategy:
       matrix:
         image:
-        - macos-latest
-        - ubuntu-latest
-        - windows-latest
+        - macos-14
+        - ubuntu-24.04
+        - windows-2025
       fail-fast: false
     runs-on: ${{ matrix.image }}
     env:

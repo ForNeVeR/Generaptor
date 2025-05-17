@@ -12,7 +12,7 @@ type Patterns =
                    RunsOn = Some "${{ matrix.image }}"
                    Strategy = Some {
                        Matrix = Map.ofSeq [ "image", images ]
-                       FailFast = None
+                       FailFast = Some false
                    }
                }
 
