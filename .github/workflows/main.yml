@@ -38,7 +38,7 @@ jobs:
     - name: Build
       run: dotnet build
     - name: Test
-      run: dotnet test
+      run: dotnet test  --filter Category!=SkipOnCI
       timeout-minutes: 10
   verify-workflows:
     runs-on: ubuntu-24.04

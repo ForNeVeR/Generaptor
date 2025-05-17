@@ -5,6 +5,7 @@ open Generaptor
 open Xunit
 
 [<Fact>]
+[<Trait("Category", "SkipOnCI")>]
 let ``ChangelogAutomation.action last version``(): Task =
     let client = ActionsClient() :> IActionsClient
     task {
