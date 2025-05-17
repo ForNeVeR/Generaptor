@@ -13,6 +13,9 @@ The format is based on [Keep a Changelog][keep-a-changelog], and this project ad
 ### Fixed
 - Correct reading of command-line arguments when invoked from `.fsx`.
 
+### Changed
+- Bump dependencies' versions.
+
 ## [1.6.0] - 2025-05-17
 ### Added
 - New command-line option: `regenerate` to prepare a Generaptor script from an already existing YAML workflow.
@@ -65,4 +68,5 @@ The initial release of this package. Main features:
 [1.4.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.3.0...v1.4.0
 [1.5.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.4.0...v1.5.0
 [1.6.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.5.0...v1.6.0
-[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.0...HEAD
+[1.6.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.0...v1.6.1
+[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.1...HEAD
