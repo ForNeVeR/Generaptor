@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [1.6.1] - 2025-05-18
+### Fixed
+- Correct reading of command-line arguments when invoked from `.fsx`.
+
 ## [1.6.0] - 2025-05-17
 ### Added
 - New command-line option: `regenerate` to prepare a Generaptor script from an already existing YAML workflow.

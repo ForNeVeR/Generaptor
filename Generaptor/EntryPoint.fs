@@ -51,10 +51,13 @@ let private Verify workflows =
 
 let Process(args: string seq) (workflows: Workflow seq): int =
     let args = Seq.toArray args
+    let args =
+        if args.Length > 0 && args[0].EndsWith ".fsx"
+        then Array.skip 1 args
+        else args
+
     match args with
     | [||] | [|"generate"|] -> runSynchronously <| generateWorkflows workflows; ExitCodes.Success
-    | [|x|] | [|x;"generate"|] when x.EndsWith(".fsx") ->
-        runSynchronously <| generateWorkflows workflows; ExitCodes.Success
     | [|"regenerate"; fileName|] -> regenerate(LocalPath fileName); ExitCodes.Success
     | [|"verify"|] -> Verify workflows
     | _ -> printUsage(); ExitCodes.ArgumentsNotRecognized
