@@ -73,7 +73,7 @@ let workflows = [
             )
             step(
                 name = "Test",
-                run = "dotnet test  --filter Category!=SkipOnCI",
+                run = "dotnet test --filter Category!=SkipOnCI",
                 timeoutMin = 10
             )
         ] |> addMatrix images
