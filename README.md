@@ -198,18 +198,25 @@ jobs:
       - run: dotnet run fsi scripts/github-actions.fsx verify
 ```
 
-Documentation
--------------
-- [Changelog][docs.changelog]
-- [License (MIT)][docs.license]
-- [Maintainer Guide][docs.maintainer-guide]
-- [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
-
 Versioning Notes
 ----------------
 This project's versioning follows the [Semantic Versioning 2.0.0][semver] specification.
 
 When considering compatible changes, we currently only consider the source compatibility with the user scripts, not binary compatibility. This may be subject to change in the future.
+
+Documentation
+-------------
+- [Changelog][docs.changelog]
+- [License (MIT)][docs.license]
+- [Contributor Guide][docs.contributing]
+- [Maintainer Guide][docs.maintainer-guide]
+- [Code of Conduct (adapted from the Contributor Covenant)][docs.code-of-conduct]
+
+License
+-------
+The project is distributed under the terms of [the MIT license][docs.license].
+
+The license indication in the project's sources is compliant with the [REUSE specification v3.3][reuse.spec].
 
 [andivionian-status-classifier]: https://andivionian.fornever.me/v1/#status-ventis-
 [api.github-actions]: ./Generaptor/GitHubActions.fs
@@ -217,6 +224,7 @@ When considering compatible changes, we currently only consider the source compa
 [api.library-patterns]: ./Generaptor.Library/Patterns.fs
 [docs.changelog]: ./CHANGELOG.md
 [docs.code-of-conduct]: ./CODE_OF_CONDUCT.md
+[docs.contributing]: CONTRIBUTING.md
 [docs.license]: ./LICENSE.md
 [docs.maintainer-guide]: ./MAINTAINERSHIP.md
 [example.main]: ./Infrastructure/GitHubActions/Program.fs
