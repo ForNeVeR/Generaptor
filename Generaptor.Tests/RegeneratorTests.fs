@@ -1,4 +1,4 @@
-﻿module Generaptor.Tests.RegeneratorTests
+module Generaptor.Tests.RegeneratorTests
 
 open System
 open System.IO

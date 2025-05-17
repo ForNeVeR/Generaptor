@@ -1,4 +1,4 @@
-﻿#r "nuget: Generaptor.Library, <GENERAPTOR_VERSION>"
+#r "nuget: Generaptor.Library, <GENERAPTOR_VERSION>"
 open Generaptor
 open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands

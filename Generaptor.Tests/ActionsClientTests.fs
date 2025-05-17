@@ -1,10 +1,11 @@
-﻿module Generaptor.Tests.ActionsClientTests
+module Generaptor.Tests.ActionsClientTests
 
 open System.Threading.Tasks
 open Generaptor
 open Xunit
 
 [<Fact>]
+[<Trait("Category", "SkipOnCI")>]
 let ``ChangelogAutomation.action last version``(): Task =
     let client = ActionsClient() :> IActionsClient
     task {

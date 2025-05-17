@@ -1,4 +1,4 @@
-﻿module Generaptor.Tests.VerifierTests
+module Generaptor.Tests.VerifierTests
 
 open System.IO
 open System.Threading.Tasks

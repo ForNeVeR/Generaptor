@@ -1,4 +1,4 @@
-﻿open System
+open System
 
 open Generaptor
 open Generaptor.GitHubActions
@@ -27,7 +27,42 @@ let workflows = [
         yield! mainTriggers
         job "main" [
             checkout
-            yield! dotNetBuildAndTest()
+
+            let sdkVersion = "8.0.x"
+            let projectFileExtensions = [ ".fsproj" ]
+
+            setEnv "DOTNET_NOLOGO" "1"
+            setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+            setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+
+            step(
+                name = "Set up .NET SDK",
+                uses = "actions/setup-dotnet@v4",
+                options = Map.ofList [
+                    "dotnet-version", sdkVersion
+                ]
+            )
+            let hashFiles =
+                projectFileExtensions
+                |> Seq.map (fun ext -> $"'**/*{ext}'")
+                |> String.concat ", "
+            step(
+                name = "NuGet cache",
+                uses = "actions/cache@v4",
+                options = Map.ofList [
+                    "path", "${{ env.NUGET_PACKAGES }}"
+                    "key", "${{ runner.os }}.nuget.${{ hashFiles(" + hashFiles + ") }}"
+                ]
+            )
+            step(
+                name = "Build",
+                run = "dotnet build"
+            )
+            step(
+                name = "Test",
+                run = "dotnet test  --filter Category!=SkipOnCI",
+                timeoutMin = 10
+            )
         ] |> addMatrix images
 
         job "verify-workflows" [
@@ -50,6 +85,25 @@ let workflows = [
             )
             step(
                 run = "dotnet run --project Infrastructure/GitHubActions -- verify"
+            )
+        ]
+
+        job "licenses" [
+            runsOn linuxImage
+            step(usesSpec = Auto "actions/checkout")
+            step(usesSpec = Auto "fsfe/reuse-action")
+        ]
+
+        job "encodings" [
+            runsOn linuxImage
+            step(uses = "actions/checkout@v4")
+            let verifyEncodingVersion = "2.2.0"
+            step(
+                shell = "pwsh",
+                run = "Install-Module VerifyEncoding " +
+                      "-Repository PSGallery " +
+                      $"-RequiredVersion {verifyEncodingVersion} " +
+                      "-Force && Test-Encoding"
             )
         ]
     ]

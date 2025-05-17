@@ -1,4 +1,4 @@
-﻿<Project>
+<Project>
     <PropertyGroup Label="Packaging">
         <Version>1.5.0</Version>
 

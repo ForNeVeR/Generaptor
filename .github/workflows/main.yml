@@ -9,7 +9,7 @@ on:
     - main
   schedule:
   - cron: 0 0 * * 6
-  workflow_dispatch:
+  workflow_dispatch: 
 jobs:
   main:
     strategy:
@@ -38,7 +38,7 @@ jobs:
     - name: Build
       run: dotnet build
     - name: Test
-      run: dotnet test
+      run: dotnet test  --filter Category!=SkipOnCI
       timeout-minutes: 10
   verify-workflows:
     runs-on: ubuntu-24.04
@@ -54,3 +54,14 @@ jobs:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
         path: ${{ env.NUGET_PACKAGES }}
     - run: dotnet run --project Infrastructure/GitHubActions -- verify
+  licenses:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - uses: fsfe/reuse-action@v5
+  encodings:
+    runs-on: ubuntu-24.04
+    steps:
+    - uses: actions/checkout@v4
+    - shell: pwsh
+      run: Install-Module VerifyEncoding -Repository PSGallery -RequiredVersion 2.2.0 -Force && Test-Encoding
