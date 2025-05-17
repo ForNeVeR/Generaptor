@@ -60,6 +60,7 @@ and Step = {
 
 type Workflow = {
     Id: string
+    Header: string option
     Name: string option
     Triggers: Triggers
     Jobs: ImmutableArray<Job>
@@ -75,6 +76,7 @@ type JobCreationCommand =
     | AddStrategy of Strategy
 
 type WorkflowCreationCommand =
+    | SetHeader of string
     | SetName of string
     | AddTrigger of TriggerCreationCommand
     | AddJob of Job
@@ -112,6 +114,7 @@ let private createJob id commands =
 let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
     let mutable wf = {
         Id = id
+        Header = None
         Name = None
         Triggers = {
             Push = {
@@ -129,6 +132,7 @@ let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
     for command in commands do
         wf <-
             match command with
+            | SetHeader header -> { wf with Header = Some header }
             | SetName name -> { wf with Name = Some name }
             | AddTrigger trigger -> addTrigger wf trigger
             | AddJob job -> { wf with Jobs = wf.Jobs.Add job }
@@ -137,6 +141,8 @@ let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
 type Commands =
     static member name(name: string): WorkflowCreationCommand =
         SetName name
+    static member header(headerText: string): WorkflowCreationCommand =
+        SetHeader headerText
 
     static member onPushTo(branchName: string): WorkflowCreationCommand =
         AddTrigger(OnPushBranches [| branchName |])

@@ -195,5 +195,9 @@ let GenerateWorkflowContent(yaml: LocalPath, wf: Workflow, client: IActionsClien
             return ExtractVersions content
         }
         else Task.FromResult Map.empty
-    return "# This file is auto-generated.\n" + Stringify wf existingVersions client
+
+    let mutable header = defaultArg wf.Header "# This file is auto-generated.\n"
+    if not(header.EndsWith "\n") then header <- $"{header}\n"
+
+    return header + Stringify wf existingVersions client
 }

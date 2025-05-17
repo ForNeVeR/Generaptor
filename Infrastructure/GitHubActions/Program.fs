@@ -1,3 +1,10 @@
+let licenseHeader = """
+# SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+#
+# SPDX-License-Identifier: MIT
+
+# This file is auto-generated.""".Trim()
+
 open System
 
 open Generaptor
@@ -15,6 +22,12 @@ let images = [
 ]
 
 let workflows = [
+    let workflow name body =
+        workflow name [
+            header licenseHeader
+            yield! body
+        ]
+
     let mainTriggers = [
         onPushTo mainBranch
         onPullRequestTo mainBranch
