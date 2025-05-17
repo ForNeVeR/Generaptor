@@ -19,7 +19,7 @@ let private generateWorkflows(workflows: Workflow seq): Task =
             Directory.CreateDirectory dir.Value |> ignore
             let yaml = dir / (wf.Id + ".yml")
             let! content = Serializers.GenerateWorkflowContent(yaml, wf, actionsClient)
-            do! File.WriteAllTextAsync(yaml.Value, "# This file is auto-generated.\n" + content)
+            do! File.WriteAllTextAsync(yaml.Value, content)
     }
 
 let private regenerate(fileName: LocalPath) =

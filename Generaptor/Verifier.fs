@@ -12,7 +12,7 @@ type VerificationResult =
     }
     member this.Success = this.Errors.Length = 0
 
-let private NormalizeText(s: string) =
+let private NormalizeText(s: string): string =
     s.Trim().Split "\n" |> Seq.map _.TrimEnd() |> String.concat "\n"
 
 let VerifyWorkflows(

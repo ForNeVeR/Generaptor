@@ -195,5 +195,5 @@ let GenerateWorkflowContent(yaml: LocalPath, wf: Workflow, client: IActionsClien
             return ExtractVersions content
         }
         else Task.FromResult Map.empty
-    return Stringify wf existingVersions client
+    return "# This file is auto-generated.\n" + Stringify wf existingVersions client
 }

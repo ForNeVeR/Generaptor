@@ -28,7 +28,8 @@ let private DoTest(files: (string * string) seq, workflows): Task<AbsolutePath *
 [<Fact>]
 let ``Verification success``(): Task =
     let files = [|
-        "wf.yml", """on: {}
+        "wf.yml", """# This file is auto-generated.
+on: {}
 jobs:
   main:
     strategy:
