@@ -52,6 +52,25 @@ let workflows = [
                 run = "dotnet run --project Infrastructure/GitHubActions -- verify"
             )
         ]
+
+        job "licenses" [
+            runsOn linuxImage
+            step(usesSpec = Auto "actions/checkout")
+            step(usesSpec = Auto "fsfe/reuse-action")
+        ]
+
+        job "encodings" [
+            runsOn linuxImage
+            step(uses = "actions/checkout@v4")
+            let verifyEncodingVersion = "2.2.0"
+            step(
+                shell = "pwsh",
+                run = "Install-Module VerifyEncoding " +
+                      "-Repository PSGallery " +
+                      $"-RequiredVersion {verifyEncodingVersion} " +
+                      "-Force && Test-Encoding"
+            )
+        ]
     ]
     workflow "release" [
         name "Release"
