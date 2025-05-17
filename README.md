@@ -152,7 +152,7 @@ let workflows = [
     ]
 ]
 
-EntryPoint.Process fsi.CommandLineArgs workflows
+exit <| EntryPoint.Process fsi.CommandLineArgs workflows
 ```
 
 ### Command-Line Arguments
@@ -191,17 +191,23 @@ Feel free to create your own actions and patterns, and either send a PR to this 
 
 ### GitHub Actions Usage
 Example usage to set up script verification on CI:
-```yaml
-jobs:
-  verify-workflows:
-    runs-on: ubuntu-latest
-    env:
-      DOTNET_CLI_TELEMETRY_OPTOUT: 1
-      DOTNET_NOLOGO: 1
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-dotnet@v4
-      - run: dotnet run fsi scripts/github-actions.fsx verify
+```fsharp
+job "verify-workflows" [
+    runsOn "ubuntu-latest"
+
+    setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
+    setEnv "DOTNET_NOLOGO" "1"
+    setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
+    step(
+        uses = "actions/checkout@v4"
+    )
+    step(
+        uses = "actions/setup-dotnet@v4"
+    )
+    step(
+        run = "dotnet fsi ./scripts/github-actions.fsx verify"
+    )
+]
 ```
 
 Versioning Notes
