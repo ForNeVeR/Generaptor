@@ -23,7 +23,7 @@ The format is based on [Keep a Changelog][keep-a-changelog], and this project ad
 ### Added
 - `Commands.step`: new parameter `env` that gets transformed into `env` on the corresponding action step.
 
-## [1.4.0] - 2025-05-15
+## [1.4.0] - 2024-05-15
 ### Added
 - `Commands.step`: new parameter `condition` that gets transformed into `if` on the corresponding action step.
 
