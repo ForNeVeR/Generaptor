@@ -6,7 +6,7 @@ SPDX-License-Identifier: MIT
 
 <Project>
     <PropertyGroup Label="Packaging">
-        <Version>1.6.1</Version>
+        <Version>1.7.0</Version>
 
         <Authors>ForNeVeR</Authors>
         <PackageProjectUrl>https://github.com/ForNeVeR/Generaptor</PackageProjectUrl>
