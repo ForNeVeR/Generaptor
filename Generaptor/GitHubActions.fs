@@ -171,7 +171,7 @@ type Commands =
     static member header(headerText: string): WorkflowCreationCommand =
         SetHeader headerText
 
-    static member concurrency(group: string, cancelInProgress: bool): WorkflowCreationCommand =
+    static member workflowConcurrency(group: string, cancelInProgress: bool): WorkflowCreationCommand =
         SetConcurrency { Group = group; CancelInProgress = cancelInProgress }
     static member workflowPermission(permission: PermissionKind, access: AccessKind): WorkflowCreationCommand =
         AddWorkflowPermission(permission, access)

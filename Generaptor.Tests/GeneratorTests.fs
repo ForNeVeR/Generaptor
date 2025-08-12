@@ -173,7 +173,7 @@ jobs: {}
 [<Fact>]
 let ``Concurrency block``(): unit =
     let wf = workflow "wf" [
-        concurrency(group = "pages", cancelInProgress = false)
+        workflowConcurrency(group = "pages", cancelInProgress = false)
     ]
     let expected = """on: {}
 concurrency:
