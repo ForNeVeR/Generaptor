@@ -28,7 +28,22 @@ type TriggerCreationCommand =
     | OnSchedule of string
     | OnWorkflowDispatch
 
-type Permission = ContentWrite
+type ConcurrencySetCommand = {
+   Group: string
+   CancelInProgress: bool
+}
+
+[<RequireQualifiedAccess>]
+type PermissionKind =
+    | Actions
+    | Contents
+    | IdToken
+    | Pages
+[<RequireQualifiedAccess>]
+type AccessKind =
+    | Read
+    | Write
+    | None
 
 type ActionSpec =
     | ActionWithVersion of nameWithVersion: string
@@ -39,7 +54,7 @@ type ActionSpec =
 type Job = {
     Id: string
     Name: string option
-    Permissions: Set<Permission>
+    Permissions: Map<PermissionKind, AccessKind>
     Needs: ImmutableArray<string>
     Strategy: Strategy option
     RunsOn: string option
@@ -66,13 +81,15 @@ type Workflow = {
     Id: string
     Header: string option
     Name: string option
+    Concurrency: ConcurrencySetCommand option
+    Permissions: Map<PermissionKind, AccessKind>
     Triggers: Triggers
     Jobs: ImmutableArray<Job>
 }
 
 type JobCreationCommand =
     | Name of string
-    | AddPermissions of Permission
+    | AddJobPermission of PermissionKind * AccessKind
     | Needs of string
     | RunsOn of string
     | AddStep of Step
@@ -82,6 +99,8 @@ type JobCreationCommand =
 type WorkflowCreationCommand =
     | SetHeader of string
     | SetName of string
+    | SetConcurrency of ConcurrencySetCommand
+    | AddWorkflowPermission of PermissionKind * AccessKind
     | AddTrigger of TriggerCreationCommand
     | AddJob of Job
 
@@ -97,7 +116,7 @@ let private createJob id commands =
         Id = id
         Name = None
         Strategy = None
-        Permissions = Set.empty
+        Permissions = Map.empty
         Needs = ImmutableArray.Empty
         RunsOn = None
         Environment = Map.empty
@@ -107,7 +126,7 @@ let private createJob id commands =
         job <-
             match command with
             | Name n -> { job with Name = Some n }
-            | AddPermissions p -> { job with Permissions = Set.add p job.Permissions }
+            | AddJobPermission(p, a) -> { job with Permissions = Map.add p a job.Permissions }
             | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
@@ -120,6 +139,8 @@ let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
         Id = id
         Header = None
         Name = None
+        Concurrency = None
+        Permissions = Map.empty
         Triggers = {
             Push = {
                 Branches = ImmutableArray.Empty
@@ -138,7 +159,9 @@ let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
             match command with
             | SetHeader header -> { wf with Header = Some header }
             | SetName name -> { wf with Name = Some name }
+            | SetConcurrency c -> { wf with Concurrency = Some c }
             | AddTrigger trigger -> addTrigger wf trigger
+            | AddWorkflowPermission(p, a) -> { wf with Permissions = Map.add p a wf.Permissions }
             | AddJob job -> { wf with Jobs = wf.Jobs.Add job }
     wf
 
@@ -147,6 +170,11 @@ type Commands =
         SetName name
     static member header(headerText: string): WorkflowCreationCommand =
         SetHeader headerText
+
+    static member concurrency(group: string, cancelInProgress: bool): WorkflowCreationCommand =
+        SetConcurrency { Group = group; CancelInProgress = cancelInProgress }
+    static member workflowPermission(permission: PermissionKind, access: AccessKind): WorkflowCreationCommand =
+        AddWorkflowPermission(permission, access)
 
     static member onPushTo(branchName: string): WorkflowCreationCommand =
         AddTrigger(OnPushBranches [| branchName |])
@@ -166,8 +194,11 @@ type Commands =
 
     static member jobName(name: string): JobCreationCommand =
         Name name
+    [<Obsolete("Use jobPermission(PermissionKind.Contents, AccessKind.Write)")>]
     static member writeContentPermissions: JobCreationCommand =
-        AddPermissions(ContentWrite)
+        Commands.jobPermission(PermissionKind.Contents, AccessKind.Write)
+    static member jobPermission(permission: PermissionKind, access: AccessKind): JobCreationCommand =
+        AddJobPermission(permission, access)
     static member needs(jobId: string): JobCreationCommand =
         Needs jobId
     static member runsOn(image: string): JobCreationCommand =

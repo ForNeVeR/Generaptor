@@ -28,6 +28,10 @@ let private StringLiteral(x: obj) =
     let s = s.Replace("\"", "\\\"").Replace("\n", "\\n")
     $"\"{s}\""
 
+let private BoolLiteral(x: obj) =
+    let v = Convert.ToBoolean x
+    if v then "true" else "false"
+
 let private Indent(spaces: int) () = String(' ', spaces)
 
 let private AddIndent(existing: unit -> string, level: int) (): string =
@@ -170,21 +174,56 @@ let private SerializeSteps(data: obj, indent: unit -> string): string =
         builder.AppendLine $"\n{indent()})" |> ignore
     builder.ToString()
 
-let private SerializePermissions(value: obj, indent: unit -> string) =
+let private SerializePermissions(kind: string, value: obj, indent: unit -> string) =
     let permissions = value :?> Dictionary<obj, obj>
     let builder = StringBuilder()
     let append v = builder.AppendLine $"{indent()}{v}" |> ignore
     for kvp in permissions do
         let key = kvp.Key :?> string
         let value = kvp.Value :?> string
-        match key with
-        | "contents" ->
-            match value with
-            | "write" -> append "writeContentPermissions"
-            | other -> failwithf $"Unknown value in the 'permissions' section: \"{other}\"."
-        | other -> failwithf $"Unknown key in the 'permissions' section: \"{other}\"."
 
+        let permission =
+            match key with
+            | "actions" -> "Actions"
+            | "contents" -> "Contents"
+            | "id-token" -> "IdToken"
+            | "pages" -> "Pages"
+            | other -> failwithf $"Unknown key in the 'permissions' section: \"{other}\"."
+
+        let access =
+            match value with
+            | "none" -> "None"
+            | "read" -> "Read"
+            | "write" -> "Write"
+            | other -> failwithf $"Unknown value in the 'permissions' section: \"{other}\"."
+
+        append $"{kind}Permission(PermissionKind.{permission}, AccessKind.{access})"
     builder.ToString()
+
+let private SerializeConcurrency(data: obj) =
+    let builder = StringBuilder()
+    let append(x: string) = builder.AppendLine $"        {x}" |> ignore
+    let map = data :?> Dictionary<obj, obj>
+    append "workflowConcurrency("
+    let mutable first = true
+    for kvp in map do
+        let key = kvp.Key :?> string
+        let value = kvp.Value
+        let appendArg k v =
+            if first then
+                first <- false
+                builder.Append $"            {k} = {v}"
+            else
+                builder.Append $",\n            {k} = {v}"
+            |> ignore
+
+        match key with
+        | "group" -> appendArg "group" <| StringLiteral value
+        | "cancel-in-progress" -> appendArg "cancelInProgress" <| BoolLiteral value
+        | other -> failwithf $"Unknown key in the 'concurrency' section: \"{other}\"."
+    builder.AppendLine "\n        )" |> ignore
+    builder.ToString()
+
 
 let private SerializeJobs(jobs: obj): string =
     let builder = StringBuilder()
@@ -206,7 +245,7 @@ let private SerializeJobs(jobs: obj): string =
             | "runs-on" -> append $"runsOn {StringLiteral value}"
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
             | "steps" -> builder.Append(SerializeSteps(value, Indent 12)) |> ignore
-            | "permissions" -> builder.Append(SerializePermissions(value, Indent 12)) |> ignore
+            | "permissions" -> builder.Append(SerializePermissions("job", value, Indent 12)) |> ignore
             | other -> failwithf $"Unknown key in the 'jobs' section: \"{other}\"."
         builder.AppendLine "        ]" |> ignore
 
@@ -223,6 +262,8 @@ let private SerializeWorkflow (name: string) (content: Dictionary<string, obj>):
         | "name" -> append $"name {StringLiteral(value :?> string)}"
         | "on" -> appendSection <| SerializeOn(value :?> Dictionary<obj, obj>)
         | "jobs" -> appendSection <| SerializeJobs value
+        | "permissions" -> appendSection <| SerializePermissions("workflow", value, Indent 8)
+        | "concurrency" -> builder.Append(SerializeConcurrency value) |> ignore
         | other -> failwithf $"Unknown key at the root level of the workflow \"{name}\": \"{other}\"."
     builder.Append("    ]").ToString()
 
@@ -244,4 +285,4 @@ open type Generaptor.GitHubActions.Commands
 let workflows = [
 {workflows}
 ]
-EntryPoint.Process fsi.CommandLineArgs workflows""".ReplaceLineEndings "\n"
+EntryPoint.Process fsi.CommandLineArgs workflows""".Trim().ReplaceLineEndings "\n"

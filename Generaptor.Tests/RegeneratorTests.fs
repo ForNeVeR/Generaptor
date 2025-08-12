@@ -166,3 +166,19 @@ jobs:
 """
     ]
     DoTest files
+
+[<Fact>]
+let PermissionsGenerator(): Task =
+    let files = [
+        "1.yml", """
+permissions:
+  actions: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+"""
+    ]
+    DoTest files

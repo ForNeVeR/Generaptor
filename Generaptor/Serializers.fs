@@ -85,10 +85,20 @@ let private convertStrategy(strategy: Strategy) =
     map
 
 let private convertPermissions permissions =
-    Map.ofArray [|
-        if Set.contains ContentWrite permissions then
-            "contents", "write"
-    |]
+    permissions |> Map.toSeq |> Seq.map(fun(k, v) ->
+        let mapPermission =
+            match k with
+            | PermissionKind.Actions -> "actions"
+            | PermissionKind.Contents -> "contents"
+            | PermissionKind.IdToken -> "id-token"
+            | PermissionKind.Pages -> "pages"
+        let mapAccess =
+            match v with
+            | AccessKind.None -> "none"
+            | AccessKind.Read -> "read"
+            | AccessKind.Write -> "write"
+        mapPermission, mapAccess
+    ) |> Map.ofSeq
 
 let private convertJobBody(job: Job, existingVersions, client) =
     let mutable map = Dictionary<string, obj>()
@@ -109,6 +119,12 @@ let private convertJobBody(job: Job, existingVersions, client) =
         map.Add("steps", convertSteps(job.Steps, existingVersions, client))
     map
 
+let private convertConcurrency concurrency =
+    let map = Dictionary<string, obj>()
+    map.Add("group", concurrency.Group)
+    map.Add("cancel-in-progress", concurrency.CancelInProgress)
+    map
+
 let private convertJobs(jobs: Job seq, existingVersions, client) =
     let map = Dictionary()
     for job in jobs do
@@ -119,6 +135,8 @@ let private convertWorkflow(wf: Workflow, existingVersions, client) =
     let mutable map = Dictionary<string, obj>()
     addOptional map "name" wf.Name
     map.Add("on", convertTriggers wf.Triggers)
+    addOptional map "concurrency" (wf.Concurrency |> Option.map convertConcurrency)
+    if not <| Map.isEmpty wf.Permissions then map.Add("permissions", convertPermissions wf.Permissions)
     map.Add("jobs", convertJobs(wf.Jobs, existingVersions, client))
     map
 

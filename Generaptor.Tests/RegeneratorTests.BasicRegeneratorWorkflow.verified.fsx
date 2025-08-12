@@ -54,7 +54,7 @@ let workflows = [
         onSchedule "0 0 * * 6"
         onWorkflowDispatch
         job "nuget" [
-            writeContentPermissions
+            jobPermission(PermissionKind.Contents, AccessKind.Write)
             runsOn "ubuntu-latest"
             step(
                 uses = "actions/checkout@v4"
