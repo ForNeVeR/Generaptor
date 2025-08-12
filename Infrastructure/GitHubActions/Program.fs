@@ -83,9 +83,7 @@ let workflows = [
             setEnv "DOTNET_CLI_TELEMETRY_OPTOUT" "1"
             setEnv "DOTNET_NOLOGO" "1"
             setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
-            step(
-                uses = "actions/checkout@v4"
-            )
+            checkout
             step(
                 uses = "actions/setup-dotnet@v4"
             )
@@ -103,13 +101,13 @@ let workflows = [
 
         job "licenses" [
             runsOn linuxImage
-            step(usesSpec = Auto "actions/checkout")
+            checkout
             step(usesSpec = Auto "fsfe/reuse-action")
         ]
 
         job "encodings" [
             runsOn linuxImage
-            step(uses = "actions/checkout@v4")
+            checkout
             let verifyEncodingVersion = "2.2.0"
             step(
                 shell = "pwsh",
@@ -127,7 +125,7 @@ let workflows = [
         job "nuget" [
             runsOn linuxImage
             checkout
-            writeContentPermissions
+            jobPermission(PermissionKind.Contents, AccessKind.Write)
 
             let configuration = "Release"
 

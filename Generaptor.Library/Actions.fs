@@ -8,7 +8,7 @@ open Generaptor.GitHubActions
 open type Generaptor.GitHubActions.Commands
 
 type Actions =
-    static member checkout: JobCreationCommand = step(uses = "actions/checkout@v4")
+    static member checkout: JobCreationCommand = step(usesSpec = Auto "actions/checkout")
 
     static member dotNetPack(version: string): JobCreationCommand =
         step(
