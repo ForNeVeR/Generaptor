@@ -128,7 +128,7 @@ let private SerializeEnvironment(data: obj): string =
     let map = data :?> Dictionary<obj, obj>
     let name = map["name"]
     let url = map["url"]
-    $"            environment(name = {StringLiteral name}, url = {StringLiteral url})"
+    $"            environment(name = {StringLiteral name}, url = {StringLiteral url})\n"
 
 let private SerializeEnv(data: obj, indent: unit -> string): string =
     let result = StringBuilder()

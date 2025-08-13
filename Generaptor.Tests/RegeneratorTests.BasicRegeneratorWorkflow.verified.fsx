@@ -96,7 +96,8 @@ let workflows = [
             cancelInProgress = false
         )
         job "publish-docs" [
-            environment(name = "github-pages", url = "${{ steps.deployment.outputs.page_url }}")            runsOn "ubuntu-22.04"
+            environment(name = "github-pages", url = "${{ steps.deployment.outputs.page_url }}")
+            runsOn "ubuntu-22.04"
             step(
                 name = "Checkout",
                 uses = "actions/checkout@v4"
