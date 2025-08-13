@@ -51,6 +51,11 @@ type ActionSpec =
     /// to the latest available action tag on GitHub.
     | Auto of name: string
 
+type JobEnvironment ={
+    Name: string
+    Url: string
+}
+
 type Job = {
     Id: string
     Name: string option
@@ -58,7 +63,8 @@ type Job = {
     Needs: ImmutableArray<string>
     Strategy: Strategy option
     RunsOn: string option
-    Environment: Map<string, string>
+    Environment: JobEnvironment option
+    Env: Map<string, string>
     Steps: ImmutableArray<Step>
 }
 and Strategy = {
@@ -93,6 +99,7 @@ type JobCreationCommand =
     | Needs of string
     | RunsOn of string
     | AddStep of Step
+    | SetEnvironment of name: string * url: string
     | SetEnv of string * string
     | AddStrategy of Strategy
 
@@ -119,7 +126,8 @@ let private createJob id commands =
         Permissions = Map.empty
         Needs = ImmutableArray.Empty
         RunsOn = None
-        Environment = Map.empty
+        Environment = None
+        Env = Map.empty
         Steps = ImmutableArray.Empty
     }
     for command in commands do
@@ -130,7 +138,8 @@ let private createJob id commands =
             | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
-            | SetEnv (key, value) -> { job with Environment = Map.add key value job.Environment}
+            | SetEnvironment(name, url) -> { job with Environment = Some { Name = name; Url = url } }
+            | SetEnv (key, value) -> { job with Env = Map.add key value job.Env }
             | AddStrategy s -> { job with Strategy = Some s }
     job
 
@@ -203,6 +212,11 @@ type Commands =
         Needs jobId
     static member runsOn(image: string): JobCreationCommand =
         RunsOn image
+
+    /// https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idenvironment
+    static member environment(name: string, url: string): JobCreationCommand =
+        SetEnvironment(name, url)
+
     static member setEnv (key: string) (value: string): JobCreationCommand =
         SetEnv(key, value)
     static member step(?id: string,

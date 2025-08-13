@@ -100,11 +100,18 @@ let private convertPermissions permissions =
         mapPermission, mapAccess
     ) |> Map.ofSeq
 
+let private convertEnvironment (e: JobEnvironment) =
+    Map.ofArray [|
+        "name", e.Name
+        "url", e.Url
+    |]
+
 let private convertJobBody(job: Job, existingVersions, client) =
     let mutable map = Dictionary<string, obj>()
     match job.Name with
     | None -> ()
     | Some n -> map.Add("name", n)
+    job.Environment |> Option.iter(fun e -> map.Add("environment", convertEnvironment e))
     match job.Strategy with
     | None -> ()
     | Some s -> map.Add("strategy", convertStrategy s)
@@ -113,8 +120,8 @@ let private convertJobBody(job: Job, existingVersions, client) =
     if not job.Needs.IsEmpty then
         map.Add("needs", job.Needs)
     addOptional map "runs-on" job.RunsOn
-    if job.Environment.Count > 0 then
-        map.Add("env", job.Environment)
+    if job.Env.Count > 0 then
+        map.Add("env", job.Env)
     if job.Steps.Length > 0 then
         map.Add("steps", convertSteps(job.Steps, existingVersions, client))
     map

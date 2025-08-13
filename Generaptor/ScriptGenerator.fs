@@ -124,6 +124,12 @@ let private SerializeStrategy(data: obj): string =
         | other -> failwithf $"Unknown key in the 'strategy' section: \"{other}\"."
     builder.Append(")").ToString()
 
+let private SerializeEnvironment(data: obj): string =
+    let map = data :?> Dictionary<obj, obj>
+    let name = map["name"]
+    let url = map["url"]
+    $"            environment(name = {StringLiteral name}, url = {StringLiteral url})"
+
 let private SerializeEnv(data: obj, indent: unit -> string): string =
     let result = StringBuilder()
     let append(x: string) = result.AppendLine $"{indent()}{x}" |> ignore
@@ -243,10 +249,11 @@ let private SerializeJobs(jobs: obj): string =
             | "name" -> append $"jobName {StringLiteral value}"
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runsOn {StringLiteral value}"
+            | "environment" -> builder.Append(SerializeEnvironment value) |> ignore
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
             | "steps" -> builder.Append(SerializeSteps(value, Indent 12)) |> ignore
             | "permissions" -> builder.Append(SerializePermissions("job", value, Indent 12)) |> ignore
-            | other -> failwithf $"Unknown key in the 'jobs' section: \"{other}\"."
+            | other -> failwithf $"Unknown key in the body of the job \"{name}\": \"{other}\"."
         builder.AppendLine "        ]" |> ignore
 
     builder.ToString()

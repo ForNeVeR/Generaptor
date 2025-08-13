@@ -84,5 +84,46 @@ let workflows = [
             )
         ]
     ]
+    workflow "docs" [
+        name "Docs"
+        onPushTo "main"
+        onWorkflowDispatch
+        workflowPermission(PermissionKind.Actions, AccessKind.Read)
+        workflowPermission(PermissionKind.Pages, AccessKind.Write)
+        workflowPermission(PermissionKind.IdToken, AccessKind.Write)
+        workflowConcurrency(
+            group = "pages",
+            cancelInProgress = false
+        )
+        job "publish-docs" [
+            environment(name = "github-pages", url = "${{ steps.deployment.outputs.page_url }}")            runsOn "ubuntu-22.04"
+            step(
+                name = "Checkout",
+                uses = "actions/checkout@v4"
+            )
+            step(
+                name = "Dotnet Setup",
+                uses = "actions/setup-dotnet@v4"
+            )
+            step(
+                run = "dotnet tool restore"
+            )
+            step(
+                run = "dotnet docfx docs/docfx.json"
+            )
+            step(
+                name = "Upload artifact",
+                uses = "actions/upload-pages-artifact@v3",
+                options = Map.ofList [
+                    "path", "docs/_site"
+                ]
+            )
+            step(
+                name = "Deploy to GitHub Pages",
+                id = "deployment",
+                uses = "actions/deploy-pages@v4"
+            )
+        ]
+    ]
 ]
 EntryPoint.Process fsi.CommandLineArgs workflows

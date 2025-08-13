@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [1.8.0]
+### Added
+- New job section: `environment`.
+
 ## [1.7.0] - 2025-08-13
 ### Added
 - New commands: `workflowPermission`, `jobPermission`, `workflowConcurrency`.
@@ -77,4 +81,5 @@ The initial release of this package. Main features:
 [1.6.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.5.0...v1.6.0
 [1.6.1]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.0...v1.6.1
 [1.7.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.1...v1.7.0
-[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.7.0...HEAD
+[1.8.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.7.0...v1.8.0
+[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.8.0...HEAD
