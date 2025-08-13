@@ -210,6 +210,31 @@ job "verify-workflows" [
 ]
 ```
 
+### Renovate
+If you use [Renovate][renovate], set up the auto-update with this snippet in `renovate.json`:
+```json
+{
+    "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+    "extends": [
+        "config:recommended"
+    ],
+    "customManagers": [
+        {
+            "description": "Update the Generaptor package.",
+            "customType": "regex",
+            "managerFilePatterns": [
+                "scripts/github-actions.fsx"
+            ],
+            "matchStrings": [
+                "#r \"nuget: (?<depName>.+), (?<currentValue>\\S+)\""
+            ],
+            "datasourceTemplate": "nuget"
+        }
+    ]
+}
+
+```
+
 Versioning Notes
 ----------------
 This project's versioning follows the [Semantic Versioning 2.0.0][semver] specification.
@@ -244,5 +269,6 @@ The license indication in the project's sources is compliant with the [REUSE spe
 [nuget.badge.generaptor]: https://img.shields.io/nuget/v/Generaptor?label=Generaptor
 [nuget.generaptor-library]: https://www.nuget.org/packages/Generaptor.Library
 [nuget.generaptor]: https://www.nuget.org/packages/Generaptor
+[renovate]: https://docs.renovatebot.com/
 [semver]: https://semver.org/spec/v2.0.0.html
 [status-ventis]: https://img.shields.io/badge/status-ventis-yellow.svg
