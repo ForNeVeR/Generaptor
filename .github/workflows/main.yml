@@ -31,7 +31,7 @@ jobs:
     steps:
     - uses: actions/checkout@v5
     - name: Set up .NET SDK
-      uses: actions/setup-dotnet@v4
+      uses: actions/setup-dotnet@v5
       with:
         dotnet-version: 8.0.x
     - name: NuGet cache
@@ -52,7 +52,7 @@ jobs:
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
     - uses: actions/checkout@v5
-    - uses: actions/setup-dotnet@v4
+    - uses: actions/setup-dotnet@v5
     - uses: actions/cache@v4
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
