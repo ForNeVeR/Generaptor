@@ -50,7 +50,7 @@ let workflows = [
 
             step(
                 name = "Set up .NET SDK",
-                uses = "actions/setup-dotnet@v4",
+                usesSpec = Auto "actions/setup-dotnet",
                 options = Map.ofList [
                     "dotnet-version", sdkVersion
                 ]
@@ -85,7 +85,7 @@ let workflows = [
             setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
             checkout
             step(
-                uses = "actions/setup-dotnet@v4"
+                usesSpec = Auto "actions/setup-dotnet"
             )
             step(
                 uses = "actions/cache@v4",
