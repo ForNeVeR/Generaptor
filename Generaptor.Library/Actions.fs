@@ -33,10 +33,14 @@ type Actions =
         )
 
     static member uploadArtifacts(artifacts: string seq, ?actionVersion: string): JobCreationCommand =
-        let version = defaultArg actionVersion "v4"
+        let uses, usesSpec =
+            match actionVersion with
+            | None -> None, Some <| Auto "actions/upload-artifact"
+            | Some version -> Some $"actions/upload-artifact@{version}", None
         step(
             name = "Upload artifacts",
-            uses = $"actions/upload-artifact@{version}",
+            ?uses = uses,
+            ?usesSpec = usesSpec,
             options = Map.ofList [
                 "path", String.concat "\n" artifacts
             ]
