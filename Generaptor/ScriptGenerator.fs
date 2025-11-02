@@ -194,6 +194,7 @@ let private SerializePermissions(kind: string, value: obj, indent: unit -> strin
             | "contents" -> "Contents"
             | "id-token" -> "IdToken"
             | "pages" -> "Pages"
+            | "pull-requests" -> "PullRequests"
             | other -> failwithf $"Unknown key in the 'permissions' section: \"{other}\"."
 
         let access =
