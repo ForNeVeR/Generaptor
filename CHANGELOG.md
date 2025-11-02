@@ -9,9 +9,12 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
-## [Unreleased]
+## [1.9.0] - 2025-11-02
 ### Changed
 - `Actions.uploadArtifacts` will now use the `usesSpec = Auto` if the `actionVersion` is not passed.
+
+### Added
+- `PermissionKind.PullRequests` for the corresponding permission.
 
 ## [1.8.0]
 ### Added
@@ -86,4 +89,5 @@ The initial release of this package. Main features:
 [1.6.1]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.0...v1.6.1
 [1.7.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.6.1...v1.7.0
 [1.8.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.7.0...v1.8.0
-[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.8.0...HEAD
+[1.9.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.8.0...v1.9.0
+[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.9.0...HEAD

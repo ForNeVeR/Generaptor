@@ -92,6 +92,7 @@ let private convertPermissions permissions =
             | PermissionKind.Contents -> "contents"
             | PermissionKind.IdToken -> "id-token"
             | PermissionKind.Pages -> "pages"
+            | PermissionKind.PullRequests -> "pull-requests"
         let mapAccess =
             match v with
             | AccessKind.None -> "none"

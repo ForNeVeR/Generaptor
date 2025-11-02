@@ -39,6 +39,7 @@ type PermissionKind =
     | Contents
     | IdToken
     | Pages
+    | PullRequests
 [<RequireQualifiedAccess>]
 type AccessKind =
     | Read
