@@ -16,7 +16,7 @@ The format is based on [Keep a Changelog][keep-a-changelog], and this project ad
 ### Added
 - `PermissionKind.PullRequests` for the corresponding permission.
 
-## [1.8.0]
+## [1.8.0] - 2025-08-13
 ### Added
 - New job section: `environment`.
 
