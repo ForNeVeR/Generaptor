@@ -199,10 +199,10 @@ job "verify-workflows" [
     setEnv "DOTNET_NOLOGO" "1"
     setEnv "NUGET_PACKAGES" "${{ github.workspace }}/.github/nuget-packages"
     step(
-        uses = "actions/checkout@v4"
+        usesSpec = Auto "actions/checkout"
     )
     step(
-        uses = "actions/setup-dotnet@v4"
+        usesSpec = Auto "actions/setup-dotnet"
     )
     step(
         run = "dotnet fsi ./scripts/github-actions.fsx verify"
