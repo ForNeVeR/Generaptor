@@ -35,7 +35,7 @@ jobs:
       with:
         dotnet-version: 8.0.x
     - name: NuGet cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
         path: ${{ env.NUGET_PACKAGES }}
@@ -53,7 +53,7 @@ jobs:
     steps:
     - uses: actions/checkout@v6
     - uses: actions/setup-dotnet@v5
-    - uses: actions/cache@v4
+    - uses: actions/cache@v5
       with:
         key: ${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}
         path: ${{ env.NUGET_PACKAGES }}
