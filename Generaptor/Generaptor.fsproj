@@ -23,7 +23,7 @@ SPDX-License-Identifier: MIT
     </ItemGroup>
 
     <ItemGroup>
-      <PackageReference Include="ChangelogAutomation.MSBuild" Version="3.0.3" PrivateAssets="All" />
+      <PackageReference Include="ChangelogAutomation.MSBuild" Version="3.0.4" PrivateAssets="All" />
       <PackageReference Include="Octokit" Version="14.0.0" />
       <PackageReference Include="TruePath" Version="1.11.0" />
       <PackageReference Include="YamlDotNet" Version="16.3.0" />
