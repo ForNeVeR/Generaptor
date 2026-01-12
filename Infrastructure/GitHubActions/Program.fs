@@ -62,7 +62,7 @@ let workflows = [
                 |> String.concat ", "
             step(
                 name = "NuGet cache",
-                uses = "actions/cache@v4",
+                usesSpec = Auto "actions/cache",
                 options = Map.ofList [
                     "path", "${{ env.NUGET_PACKAGES }}"
                     "key", "${{ runner.os }}.nuget.${{ hashFiles(" + hashFiles + ") }}"
@@ -89,7 +89,7 @@ let workflows = [
                 usesSpec = Auto "actions/setup-dotnet"
             )
             step(
-                uses = "actions/cache@v4",
+                usesSpec = Auto "actions/cache",
                 options = Map.ofList [
                     "key", "${{ runner.os }}.nuget.${{ hashFiles('**/*.fsproj') }}"
                     "path", "${{ env.NUGET_PACKAGES }}"
