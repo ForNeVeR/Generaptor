@@ -1,5 +1,5 @@
 let licenseHeader = """
-# SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+# SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 #
 # SPDX-License-Identifier: MIT
 
@@ -30,6 +30,7 @@ let workflows = [
 
     let mainTriggers = [
         onPushTo mainBranch
+        onPushTo "renovate/**"
         onPullRequestTo mainBranch
         onSchedule(day = DayOfWeek.Saturday)
         onWorkflowDispatch
