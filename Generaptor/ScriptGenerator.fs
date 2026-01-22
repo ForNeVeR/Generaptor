@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+// SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 //
 // SPDX-License-Identifier: MIT
 
@@ -293,4 +293,4 @@ open type Generaptor.GitHubActions.Commands
 let workflows = [
 {workflows}
 ]
-EntryPoint.Process fsi.CommandLineArgs workflows""".Trim().ReplaceLineEndings "\n"
+exit <| EntryPoint.Process fsi.CommandLineArgs workflows""".Trim().ReplaceLineEndings "\n"
