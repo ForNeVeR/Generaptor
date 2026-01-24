@@ -1,6 +1,6 @@
 The MIT License
 ===============
-Copyright (C) 2024-2025 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
+Copyright (C) 2024-2026 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of
 this software and associated documentation files (the "Software"), to deal in
