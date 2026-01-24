@@ -277,3 +277,37 @@ jobs:
 """
     let ex = Assert.Throws(fun() -> Serializers.ExtractVersions existing |> ignore)
     Assert.Equal("Cannot determine any parseable version for action ForNeVeR/ChangelogAutomation.", ex.Message)
+
+[<Fact>]
+let ``No anchors in output``(): unit =
+    let wf = workflow "wf" [
+        let runOnAllImages = [
+            strategy(matrix = [
+                "image", [
+                    "macos-14"
+                    "ubuntu-24.04"
+                ]
+            ])
+            runsOn "${{ matrix.image }}"
+        ]
+        job "a" [ yield! runOnAllImages ]
+        job "b" [ yield! runOnAllImages ]
+    ]
+    let expected = """on: {}
+jobs:
+  a:
+    strategy:
+      matrix:
+        image:
+        - macos-14
+        - ubuntu-24.04
+    runs-on: ${{ matrix.image }}
+  b:
+    strategy:
+      matrix:
+        image:
+        - macos-14
+        - ubuntu-24.04
+    runs-on: ${{ matrix.image }}
+"""
+    doTest expected wf

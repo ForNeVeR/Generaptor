@@ -203,6 +203,7 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
 let internal Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
     let serializer =
         SerializerBuilder()
+            .DisableAliases()
             .WithNewLine("\n")
             .WithEventEmitter(fun nextEmitter ->
                 { new ChainedEventEmitter(nextEmitter) with

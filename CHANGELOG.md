@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [Unreleased] (1.9.1)
+### Changed
+- Action generator no longer emits anchors (e.g. `&o0`).
+
 ## [1.9.0] - 2025-11-02
 ### Changed
 - `Actions.uploadArtifacts` will now use the `usesSpec = Auto` if the `actionVersion` is not passed.
