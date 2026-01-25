@@ -35,10 +35,14 @@ let private GenerateDiff(oldContent: string, newContent: string): string =
         match line.Type with
         | ChangeType.Inserted -> output.AppendLine($"+ {line.Text}") |> ignore
         | ChangeType.Deleted -> output.AppendLine($"- {line.Text}") |> ignore
-        | ChangeType.Modified -> output.AppendLine($"? {line.Text}") |> ignore
-        | ChangeType.Imaginary -> () // Skip imaginary lines
+        | ChangeType.Imaginary -> () // Skip imaginary lines (used for side-by-side alignment)
         | ChangeType.Unchanged -> output.AppendLine($"  {line.Text}") |> ignore
-        | _ -> output.AppendLine($"  {line.Text}") |> ignore
+        | ChangeType.Modified ->
+            // Modified lines in inline diff should not occur, but handle as unchanged if they do
+            output.AppendLine($"  {line.Text}") |> ignore
+        | _ ->
+            // Handle any unexpected ChangeType values as unchanged
+            output.AppendLine($"  {line.Text}") |> ignore
     
     output.ToString().TrimEnd()
 
