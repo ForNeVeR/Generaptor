@@ -19,6 +19,33 @@ type VerificationResult =
 let private NormalizeText(s: string): string =
     s.Trim().Split "\n" |> Seq.map _.TrimEnd() |> String.concat "\n"
 
+let private GenerateDiff(oldContent: string, newContent: string): string =
+    let oldLines = NormalizeText(oldContent).Split "\n"
+    let newLines = NormalizeText(newContent).Split "\n"
+    let maxLines = max oldLines.Length newLines.Length
+    
+    let diffLines = ResizeArray()
+    diffLines.Add "--- Expected (current file)"
+    diffLines.Add "+++ Generated (expected content)"
+    
+    for i in 0 .. maxLines - 1 do
+        let oldLine = if i < oldLines.Length then Some oldLines[i] else None
+        let newLine = if i < newLines.Length then Some newLines[i] else None
+        
+        match oldLine, newLine with
+        | Some o, Some n when o = n -> 
+            diffLines.Add $"  {o}"
+        | Some o, Some n ->
+            diffLines.Add $"- {o}"
+            diffLines.Add $"+ {n}"
+        | Some o, None ->
+            diffLines.Add $"- {o}"
+        | None, Some n ->
+            diffLines.Add $"+ {n}"
+        | None, None -> ()
+    
+    String.concat "\n" diffLines
+
 let VerifyWorkflows(
     workflowDir: LocalPath,
     workflows: Workflow seq,
@@ -40,10 +67,11 @@ let VerifyWorkflows(
         match oldContent, newContent with
         | None, _ -> errors.Add $"File for the workflow \"{wf.Id}\" doesn't exist: \"{yaml.Value}\"."
         | Some x, y when NormalizeText x = NormalizeText y -> ()
-        | Some _, _ ->
+        | Some x, y ->
+            let diff = GenerateDiff(x, y)
             errors.Add (
                 $"The content of the file \"{yaml.Value}\" differs " +
-                $"from the generated content for the workflow \"{wf.Id}\"."
+                $"from the generated content for the workflow \"{wf.Id}\".\n{diff}"
             )
 
         files.Remove yaml |> ignore
