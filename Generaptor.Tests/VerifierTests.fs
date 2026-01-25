@@ -45,10 +45,12 @@ jobs:
           name: linux
         - image: windows-2022
           name: windows
+    runs-on: ubuntu-latest
 """
     |]
     let wf = workflow "wf" [
         job "main" [|
+            runsOn "ubuntu-latest"
             strategy(matrix = [|
                 "config", [
                     Map.ofList [
@@ -89,10 +91,12 @@ jobs:
           name: linux
         - image: windows-2022
           name: windows
+    runs-on: ubuntu-latest
 """
     |]
     let wf = workflow "wf" [
         job "main" [|
+            runsOn "ubuntu-latest"
             strategy(matrix = [|
                 "config", [
                     Map.ofList [

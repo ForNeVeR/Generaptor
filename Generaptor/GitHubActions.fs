@@ -142,7 +142,9 @@ let private createJob id commands =
             | SetEnvironment(name, url) -> { job with Environment = Some { Name = name; Url = url } }
             | SetEnv (key, value) -> { job with Env = Map.add key value job.Env }
             | AddStrategy s -> { job with Strategy = Some s }
-    job
+    match job.RunsOn with
+    | None -> failwithf $"Job \"{id}\" does not have runs-on specified."
+    | Some _ -> job
 
 let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
     let mutable wf = {
