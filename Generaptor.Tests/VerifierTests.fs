@@ -120,8 +120,8 @@ jobs:
             $"The content of the file \"{file.Value}\" differs from the generated content for the workflow \"wf\".",
             error
         )
-        Assert.Contains("--- Expected (current file)", error)
-        Assert.Contains("+++ Generated (expected content)", error)
+        Assert.Contains("--- Actual (current file)", error)
+        Assert.Contains("+++ Expected (generated content)", error)
         Assert.Contains("- # incorrect content", error)
         Assert.Contains("+ # This file is auto-generated.", error)
     }
