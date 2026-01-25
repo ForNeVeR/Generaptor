@@ -173,6 +173,7 @@ let private SerializeSteps(data: obj, indent: unit -> string): string =
             | "uses" -> appendArg "uses" <| StringLiteral value
             | "shell" -> appendArg "shell" <| StringLiteral value
             | "run" -> appendArg "run" <| StringLiteral value
+            | "working-directory" -> appendArg "workingDirectory" <| StringLiteral value
             | "with" -> appendArg "options" <| SerializeStringMap(value, Indent 16)
             | "env" -> appendArg "env" <| SerializeStringMap(value, Indent 16)
             | "timeout-minutes" -> appendArg "timeoutMin" value

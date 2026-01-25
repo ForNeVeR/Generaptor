@@ -221,3 +221,20 @@ concurrency:
 """
     ]
     DoTest files
+
+[<Fact>]
+let WorkingDirectoryGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  test:
+    steps:
+      - name: Run unit tests
+        run: dotnet test
+        working-directory: Fabricator.Tests
+      - name: Run integration tests
+        run: dotnet test
+        working-directory: Fabricator.IntegrationTests
+"""
+    ]
+    DoTest files

@@ -68,6 +68,7 @@ let private convertSteps(steps, existingVersions, client) =
 
         addOptional map "shell" step.Shell
         addOptional map "run" step.Run
+        addOptional map "working-directory" step.WorkingDirectory
         if not <| Map.isEmpty step.Options then
             map.Add("with", step.Options)
         if not <| Map.isEmpty step.Environment then
