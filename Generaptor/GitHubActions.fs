@@ -79,6 +79,7 @@ and Step = {
     Uses: ActionSpec option
     Shell: string option
     Run: string option
+    WorkingDirectory: string option
     Options: Map<string, string>
     Environment: Map<string, string>
     TimeoutMin: int option
@@ -227,6 +228,7 @@ type Commands =
                        ?usesSpec: ActionSpec,
                        ?shell: string,
                        ?run: string,
+                       ?workingDirectory: string,
                        ?options: Map<string, string>,
                        ?env: Map<string, string>,
                        ?timeoutMin: int): JobCreationCommand =
@@ -244,6 +246,7 @@ type Commands =
             Uses = actionSpec
             Shell = shell
             Run = run
+            WorkingDirectory = workingDirectory
             Options = defaultArg options Map.empty
             Environment = defaultArg env Map.empty
             TimeoutMin = timeoutMin
