@@ -114,11 +114,16 @@ jobs:
     task {
         let! (path, content) = DoTest(files, [|wf|])
         let file = path / (wf.Id + ".yml")
-        Assert.Equal({
-            Errors = [|
-                $"The content of the file \"{file.Value}\" differs from the generated content for the workflow \"wf\"."
-            |]
-        }, content)
+        Assert.Single(content.Errors) |> ignore
+        let error = content.Errors[0]
+        Assert.StartsWith(
+            $"The content of the file \"{file.Value}\" differs from the generated content for the workflow \"wf\".",
+            error
+        )
+        Assert.Contains("--- Expected (current file)", error)
+        Assert.Contains("+++ Generated (expected content)", error)
+        Assert.Contains("- # incorrect content", error)
+        Assert.Contains("+ # This file is auto-generated.", error)
     }
 
 [<Fact>]
