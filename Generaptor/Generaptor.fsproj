@@ -27,6 +27,7 @@ SPDX-License-Identifier: MIT
       <PackageReference Include="DiffPlex" Version="1.9.0" />
       <PackageReference Include="Octokit" Version="14.0.0" />
       <PackageReference Include="TruePath" Version="1.11.0" />
+      <PackageReference Include="TruePath.SystemIo" Version="1.11.0" />
       <PackageReference Include="YamlDotNet" Version="16.3.0" />
     </ItemGroup>
 
