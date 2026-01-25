@@ -25,8 +25,8 @@ let private GenerateDiff(oldContent: string, newContent: string): string =
     let maxLines = max oldLines.Length newLines.Length
     
     let diffLines = ResizeArray()
-    diffLines.Add "--- Expected (current file)"
-    diffLines.Add "+++ Generated (expected content)"
+    diffLines.Add "--- Actual (current file)"
+    diffLines.Add "+++ Expected (generated content)"
     
     for i in 0 .. maxLines - 1 do
         let oldLine = if i < oldLines.Length then Some oldLines[i] else None
