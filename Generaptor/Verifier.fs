@@ -6,7 +6,11 @@ module Generaptor.Verifier
 
 open System.Collections.Generic
 open System.IO
+open System.Text
 open System.Threading.Tasks
+open DiffPlex
+open DiffPlex.DiffBuilder
+open DiffPlex.DiffBuilder.Model
 open Generaptor.GitHubActions
 open TruePath
 
@@ -20,31 +24,23 @@ let private NormalizeText(s: string): string =
     s.Trim().Split "\n" |> Seq.map _.TrimEnd() |> String.concat "\n"
 
 let private GenerateDiff(oldContent: string, newContent: string): string =
-    let oldLines = NormalizeText(oldContent).Split "\n"
-    let newLines = NormalizeText(newContent).Split "\n"
-    let maxLines = max oldLines.Length newLines.Length
+    let diffBuilder = InlineDiffBuilder(Differ())
+    let diff = diffBuilder.BuildDiffModel(NormalizeText oldContent, NormalizeText newContent)
     
-    let diffLines = ResizeArray()
-    diffLines.Add "--- Actual (current file)"
-    diffLines.Add "+++ Expected (generated content)"
+    let output = StringBuilder()
+    output.AppendLine("--- Actual (current file)") |> ignore
+    output.AppendLine("+++ Expected (generated content)") |> ignore
     
-    for i in 0 .. maxLines - 1 do
-        let oldLine = if i < oldLines.Length then Some oldLines[i] else None
-        let newLine = if i < newLines.Length then Some newLines[i] else None
-        
-        match oldLine, newLine with
-        | Some o, Some n when o = n -> 
-            diffLines.Add $"  {o}"
-        | Some o, Some n ->
-            diffLines.Add $"- {o}"
-            diffLines.Add $"+ {n}"
-        | Some o, None ->
-            diffLines.Add $"- {o}"
-        | None, Some n ->
-            diffLines.Add $"+ {n}"
-        | None, None -> ()
+    for line in diff.Lines do
+        match line.Type with
+        | ChangeType.Inserted -> output.AppendLine($"+ {line.Text}") |> ignore
+        | ChangeType.Deleted -> output.AppendLine($"- {line.Text}") |> ignore
+        | ChangeType.Modified -> output.AppendLine($"? {line.Text}") |> ignore
+        | ChangeType.Imaginary -> () // Skip imaginary lines
+        | ChangeType.Unchanged -> output.AppendLine($"  {line.Text}") |> ignore
+        | _ -> output.AppendLine($"  {line.Text}") |> ignore
     
-    String.concat "\n" diffLines
+    output.ToString().TrimEnd()
 
 let VerifyWorkflows(
     workflowDir: LocalPath,
