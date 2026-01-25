@@ -329,12 +329,13 @@ jobs:
 
 [<Fact>]
 let ``Job without runs-on raises exception``(): unit =
+    let wf = workflow "wf" [
+        job "licenses" [
+            step(uses = "actions/checkout@v4")
+            step(name = "Check REUSE compliance", usesSpec = Auto "fsfe/reuse-action")
+        ]
+    ]
     let ex = Assert.Throws<exn>(fun() ->
-        workflow "wf" [
-            job "licenses" [
-                step(uses = "actions/checkout@v4")
-                step(name = "Check REUSE compliance", usesSpec = Auto "fsfe/reuse-action")
-            ]
-        ] |> ignore
+        Serializers.Stringify wf Map.empty TestFramework.MockActionsClient |> ignore
     )
     Assert.Contains("runs-on", ex.Message)
