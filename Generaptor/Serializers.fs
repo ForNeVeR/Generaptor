@@ -200,7 +200,15 @@ let ExtractVersions(content: string): Map<string, ActionVersion> =
     )
     |> Map.ofSeq
 
+let private validateWorkflow(wf: Workflow): unit =
+    for job in wf.Jobs do
+        match job.RunsOn with
+        | None -> failwithf $"Job \"{job.Id}\" does not have runs-on specified."
+        | Some _ -> ()
+
 let internal Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
+    validateWorkflow wf
+    
     let serializer =
         SerializerBuilder()
             .DisableAliases()
