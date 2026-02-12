@@ -64,6 +64,7 @@ type Job = {
     Needs: ImmutableArray<string>
     Strategy: Strategy option
     RunsOn: string option
+    TimeoutMin: int option
     Environment: JobEnvironment option
     Env: Map<string, string>
     Steps: ImmutableArray<Step>
@@ -100,6 +101,7 @@ type JobCreationCommand =
     | AddJobPermission of PermissionKind * AccessKind
     | Needs of string
     | RunsOn of string
+    | TimeoutMin of int
     | AddStep of Step
     | SetEnvironment of name: string * url: string
     | SetEnv of string * string
@@ -128,6 +130,7 @@ let private createJob id commands =
         Permissions = Map.empty
         Needs = ImmutableArray.Empty
         RunsOn = None
+        TimeoutMin = None
         Environment = None
         Env = Map.empty
         Steps = ImmutableArray.Empty
@@ -139,6 +142,7 @@ let private createJob id commands =
             | AddJobPermission(p, a) -> { job with Permissions = Map.add p a job.Permissions }
             | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
+            | TimeoutMin timeout -> { job with TimeoutMin = Some timeout }
             | AddStep step -> { job with Steps = job.Steps.Add(step) }
             | SetEnvironment(name, url) -> { job with Environment = Some { Name = name; Url = url } }
             | SetEnv (key, value) -> { job with Env = Map.add key value job.Env }
@@ -214,6 +218,8 @@ type Commands =
         Needs jobId
     static member runsOn(image: string): JobCreationCommand =
         RunsOn image
+    static member jobTimeout(timeoutMin: int): JobCreationCommand =
+        TimeoutMin timeoutMin
 
     /// https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idenvironment
     static member environment(name: string, url: string): JobCreationCommand =

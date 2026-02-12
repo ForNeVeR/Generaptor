@@ -9,6 +9,10 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [Unreleased]
+### Added
+- Support for `timeout-minutes` at the job level via the `jobTimeout` command.
+
 ## [1.9.1] - 2026-01-24
 ### Fixed
 - `regenerate` command will now emit a script with a correct exit code handling.

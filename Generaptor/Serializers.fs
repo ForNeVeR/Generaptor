@@ -122,6 +122,7 @@ let private convertJobBody(job: Job, existingVersions, client) =
     if not job.Needs.IsEmpty then
         map.Add("needs", job.Needs)
     addOptional map "runs-on" job.RunsOn
+    addOptional map "timeout-minutes" job.TimeoutMin
     if job.Env.Count > 0 then
         map.Add("env", job.Env)
     if job.Steps.Length > 0 then
