@@ -251,6 +251,7 @@ let private SerializeJobs(jobs: obj): string =
             | "name" -> append $"jobName {StringLiteral value}"
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runsOn {StringLiteral value}"
+            | "timeout-minutes" -> append $"jobTimeout {value}"
             | "environment" -> builder.Append(SerializeEnvironment value) |> ignore
             | "env" -> builder.Append(SerializeEnv(value, Indent 12)) |> ignore
             | "steps" -> builder.Append(SerializeSteps(value, Indent 12)) |> ignore

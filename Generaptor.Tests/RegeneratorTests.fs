@@ -238,3 +238,19 @@ jobs:
 """
     ]
     DoTest files
+
+[<Fact>]
+let JobTimeoutGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  main:
+    permissions:
+      contents: write
+      pull-requests: write
+
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+"""
+    ]
+    DoTest files

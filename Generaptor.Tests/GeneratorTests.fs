@@ -339,3 +339,19 @@ let ``Job without runs-on raises exception``(): unit =
         Serializers.Stringify wf Map.empty TestFramework.MockActionsClient |> ignore
     )
     Assert.Contains("runs-on", ex.Message)
+
+[<Fact>]
+let ``Job timeout-minutes test``(): unit =
+    let wf = workflow "wf" [
+        job "main" [
+            runsOn "ubuntu-24.04"
+            jobTimeout 15
+        ]
+    ]
+    let expected = """on: {}
+jobs:
+  main:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+"""
+    doTest expected wf
