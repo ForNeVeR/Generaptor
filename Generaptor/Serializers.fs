@@ -19,16 +19,26 @@ open Generaptor.GitHubActions
 let private convertTriggers(triggers: Triggers) =
     let map = Dictionary<string, obj>()
 
-    let push = triggers.Push
-    if push.Branches.Length > 0 || push.Tags.Length > 0 then
-        map.Add("push", Map.ofArray [|
-            if push.Branches.Length > 0 then
-                "branches", push.Branches
-            if push.Tags.Length > 0 then
-                "tags", push.Tags
-        |])
-    if triggers.PullRequest.Branches.Length > 0 then
-        map.Add("pull_request", Map.ofArray [| "branches", triggers.PullRequest.Branches |])
+    match triggers.Push with
+    | None -> ()
+    | Some push ->
+        if push.Branches.Length > 0 || push.Tags.Length > 0 then
+            map.Add("push", Map.ofArray [|
+                if push.Branches.Length > 0 then
+                    "branches", push.Branches
+                if push.Tags.Length > 0 then
+                    "tags", push.Tags
+            |])
+        else
+            map.Add("push", null)
+
+    match triggers.PullRequest with
+    | None -> ()
+    | Some pr ->
+        if pr.Branches.Length > 0 then
+            map.Add("pull_request", Map.ofArray [| "branches", pr.Branches |])
+        else
+            map.Add("pull_request", null)
     match triggers.Schedule with
     | None -> ()
     | Some cron -> map.Add("schedule", [| Map.ofArray [| "cron", cron |] |])

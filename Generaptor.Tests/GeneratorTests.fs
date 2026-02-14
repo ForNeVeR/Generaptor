@@ -355,3 +355,37 @@ jobs:
     timeout-minutes: 15
 """
     doTest expected wf
+
+[<Fact>]
+let ``Unfiltered pull_request trigger``(): unit =
+    let wf = workflow "wf" [
+        onPullRequest
+        job "main" [
+            runsOn "ubuntu-latest"
+        ]
+    ]
+    let expected = "on:\n  pull_request: \njobs:\n  main:\n    runs-on: ubuntu-latest\n"
+    doTest expected wf
+
+[<Fact>]
+let ``Unfiltered push trigger``(): unit =
+    let wf = workflow "wf" [
+        onPush
+        job "main" [
+            runsOn "ubuntu-latest"
+        ]
+    ]
+    let expected = "on:\n  push: \njobs:\n  main:\n    runs-on: ubuntu-latest\n"
+    doTest expected wf
+
+[<Fact>]
+let ``Combined filtered and unfiltered triggers``(): unit =
+    let wf = workflow "wf" [
+        onPushTo "main"
+        onPullRequest
+        job "main" [
+            runsOn "ubuntu-latest"
+        ]
+    ]
+    let expected = "on:\n  push:\n    branches:\n    - main\n  pull_request: \njobs:\n  main:\n    runs-on: ubuntu-latest\n"
+    doTest expected wf

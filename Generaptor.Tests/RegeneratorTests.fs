@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+// SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 //
 // SPDX-License-Identifier: MIT
 
@@ -251,6 +251,32 @@ jobs:
 
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+"""
+    ]
+    DoTest files
+
+[<Fact>]
+let PullRequestWithoutBranches(): Task =
+    let files = [
+        "1.yml", """
+on:
+  pull_request:
+jobs:
+  main:
+    runs-on: ubuntu-latest
+"""
+    ]
+    DoTest files
+
+[<Fact>]
+let PushWithoutBranches(): Task =
+    let files = [
+        "1.yml", """
+on:
+  push:
+jobs:
+  main:
+    runs-on: ubuntu-latest
 """
     ]
     DoTest files

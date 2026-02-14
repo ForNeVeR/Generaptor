@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2025 Friedrich von Never <friedrich@fornever.me>
+// SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
 //
 // SPDX-License-Identifier: MIT
 
@@ -8,8 +8,8 @@ open System
 open System.Collections.Immutable
 
 type Triggers = {
-    Push: PushTrigger
-    PullRequest: PullRequestTrigger
+    Push: PushTrigger option
+    PullRequest: PullRequestTrigger option
     Schedule: string option
     WorkflowDispatch: bool
 }
@@ -22,8 +22,10 @@ and PullRequestTrigger = {
 }
 
 type TriggerCreationCommand =
+    | OnPush
     | OnPushBranches of string seq
     | OnPushTags of string seq
+    | OnPullRequest
     | OnPullRequestToBranches of string seq
     | OnSchedule of string
     | OnWorkflowDispatch
@@ -116,11 +118,23 @@ type WorkflowCreationCommand =
     | AddJob of Job
 
 let private addTrigger wf = function
-    | OnPushBranches branches -> { wf with Workflow.Triggers.Push.Branches = wf.Triggers.Push.Branches.AddRange(branches) }
-    | OnPushTags tags -> { wf with Workflow.Triggers.Push.Tags = wf.Triggers.Push.Tags.AddRange(tags) }
-    | OnPullRequestToBranches branches -> { wf with Workflow.Triggers.PullRequest.Branches = wf.Triggers.PullRequest.Branches.AddRange(branches) }
-    | OnSchedule cron -> { wf with Workflow.Triggers.Schedule = Some cron }
-    | OnWorkflowDispatch -> { wf with Workflow.Triggers.WorkflowDispatch = true }
+    | OnPush ->
+        let existing = defaultArg wf.Triggers.Push { Branches = ImmutableArray.Empty; Tags = ImmutableArray.Empty }
+        { wf with Triggers = { wf.Triggers with Push = Some existing } }
+    | OnPushBranches branches ->
+        let existing = defaultArg wf.Triggers.Push { Branches = ImmutableArray.Empty; Tags = ImmutableArray.Empty }
+        { wf with Triggers = { wf.Triggers with Push = Some { existing with Branches = existing.Branches.AddRange branches } } }
+    | OnPushTags tags ->
+        let existing = defaultArg wf.Triggers.Push { Branches = ImmutableArray.Empty; Tags = ImmutableArray.Empty }
+        { wf with Triggers = { wf.Triggers with Push = Some { existing with Tags = existing.Tags.AddRange tags } } }
+    | OnPullRequest ->
+        let existing = defaultArg wf.Triggers.PullRequest { Branches = ImmutableArray.Empty }
+        { wf with Triggers = { wf.Triggers with PullRequest = Some existing } }
+    | OnPullRequestToBranches branches ->
+        let existing = defaultArg wf.Triggers.PullRequest { Branches = ImmutableArray.Empty }
+        { wf with Triggers = { wf.Triggers with PullRequest = Some { existing with Branches = existing.Branches.AddRange branches } } }
+    | OnSchedule cron -> { wf with Triggers = { wf.Triggers with Schedule = Some cron } }
+    | OnWorkflowDispatch -> { wf with Triggers = { wf.Triggers with WorkflowDispatch = true } }
 
 let private createJob id commands =
     let mutable job = {
@@ -157,13 +171,8 @@ let workflow (id: string) (commands: WorkflowCreationCommand seq): Workflow =
         Concurrency = None
         Permissions = Map.empty
         Triggers = {
-            Push = {
-                Branches = ImmutableArray.Empty
-                Tags = ImmutableArray.Empty
-            }
-            PullRequest = {
-                Branches = ImmutableArray.Empty
-            }
+            Push = None
+            PullRequest = None
             Schedule = None
             WorkflowDispatch = false
         }
@@ -201,6 +210,10 @@ type Commands =
         AddTrigger(OnSchedule cron)
     static member onSchedule(day: DayOfWeek): WorkflowCreationCommand =
         AddTrigger(OnSchedule $"0 0 * * {int day}")
+    static member onPush: WorkflowCreationCommand =
+        AddTrigger OnPush
+    static member onPullRequest: WorkflowCreationCommand =
+        AddTrigger OnPullRequest
     static member onWorkflowDispatch: WorkflowCreationCommand =
         AddTrigger OnWorkflowDispatch
 

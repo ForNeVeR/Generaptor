@@ -45,27 +45,33 @@ let private SerializeOn(data: Dictionary<obj, obj>): string =
         let value = kvp.Value
         match key with
         | "push" ->
-            let children = value :?> Dictionary<obj, obj>
-            children.GetValueOrDefault "branches" |> Option.ofObj |> Option.iter(fun branches ->
-                branches :?> obj seq
-                |> Seq.iter(fun branch ->
-                    append $"onPushTo {StringLiteral branch}"
+            match value with
+            | null -> append "onPush"
+            | _ ->
+                let children = value :?> Dictionary<obj, obj>
+                children.GetValueOrDefault "branches" |> Option.ofObj |> Option.iter(fun branches ->
+                    branches :?> obj seq
+                    |> Seq.iter(fun branch ->
+                        append $"onPushTo {StringLiteral branch}"
+                    )
                 )
-            )
-            children.GetValueOrDefault "tags" |> Option.ofObj |> Option.iter(fun tags ->
-                tags :?> _ seq
-                |> Seq.iter(fun tag ->
-                    append $"onPushTags {StringLiteral tag}"
+                children.GetValueOrDefault "tags" |> Option.ofObj |> Option.iter(fun tags ->
+                    tags :?> _ seq
+                    |> Seq.iter(fun tag ->
+                        append $"onPushTags {StringLiteral tag}"
+                    )
                 )
-            )
         | "pull_request" ->
-            let children = value :?> Dictionary<obj, obj>
-            children.GetValueOrDefault "branches" |> Option.ofObj |> Option.iter(fun branches ->
-                branches :?> _ seq
-                |> Seq.iter(fun branch ->
-                    append $"onPullRequestTo {StringLiteral branch}"
+            match value with
+            | null -> append "onPullRequest"
+            | _ ->
+                let children = value :?> Dictionary<obj, obj>
+                children.GetValueOrDefault "branches" |> Option.ofObj |> Option.iter(fun branches ->
+                    branches :?> _ seq
+                    |> Seq.iter(fun branch ->
+                        append $"onPullRequestTo {StringLiteral branch}"
+                    )
                 )
-            )
         | "schedule" ->
             value :?> obj seq |> Seq.iter(fun entry ->
                 let cron = (entry :?> Dictionary<obj, obj>)["cron"]
