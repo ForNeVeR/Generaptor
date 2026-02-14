@@ -246,6 +246,7 @@ let JobTimeoutGenerator(): Task =
 jobs:
   main:
     permissions:
+      checks: write
       contents: write
       pull-requests: write
 

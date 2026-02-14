@@ -198,6 +198,7 @@ let private SerializePermissions(kind: string, value: obj, indent: unit -> strin
         let permission =
             match key with
             | "actions" -> "Actions"
+            | "checks" -> "Checks"
             | "contents" -> "Contents"
             | "id-token" -> "IdToken"
             | "pages" -> "Pages"

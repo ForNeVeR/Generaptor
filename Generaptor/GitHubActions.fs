@@ -38,6 +38,7 @@ type ConcurrencySetCommand = {
 [<RequireQualifiedAccess>]
 type PermissionKind =
     | Actions
+    | Checks
     | Contents
     | IdToken
     | Pages

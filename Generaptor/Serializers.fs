@@ -100,6 +100,7 @@ let private convertPermissions permissions =
         let mapPermission =
             match k with
             | PermissionKind.Actions -> "actions"
+            | PermissionKind.Checks -> "checks"
             | PermissionKind.Contents -> "contents"
             | PermissionKind.IdToken -> "id-token"
             | PermissionKind.Pages -> "pages"

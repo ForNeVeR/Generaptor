@@ -9,6 +9,11 @@ All notable changes to this project will be documented in this file.
 
 The format is based on [Keep a Changelog][keep-a-changelog], and this project adheres to [Semantic Versioning v2.0.0][semver]. See [the README file][docs.readme] for more details on how it is versioned.
 
+## [1.11.0] - 2026-02-14
+### Added
+- Support for `needs` on jobs.
+- Support for `permissions.checks` on jobs.
+
 ## [1.10.1] - 2026-02-14
 ### Changed
 - [#124](https://github.com/ForNeVeR/Generaptor/issues/124): support empty `on: push:` and `on: pull_request:` statements (meaning any push and any pull-request).
@@ -111,4 +116,5 @@ The initial release of this package. Main features:
 [1.9.1]: https://github.com/ForNeVeR/Generaptor/compare/v1.9.0...v1.9.1
 [1.10.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.9.1...v1.10.0
 [1.10.1]: https://github.com/ForNeVeR/Generaptor/compare/v1.10.0...v1.10.1
-[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.10.1...HEAD
+[1.11.0]: https://github.com/ForNeVeR/Generaptor/compare/v1.10.1...v1.11.0
+[Unreleased]: https://github.com/ForNeVeR/Generaptor/compare/v1.11.0...HEAD
