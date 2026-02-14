@@ -256,6 +256,24 @@ jobs:
     DoTest files
 
 [<Fact>]
+let NeedsGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+  test:
+    needs: [ build ]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+"""
+    ]
+    DoTest files
+
+[<Fact>]
 let PullRequestWithoutBranches(): Task =
     let files = [
         "1.yml", """

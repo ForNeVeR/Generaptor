@@ -255,6 +255,13 @@ let private SerializeJobs(jobs: obj): string =
             let value = kvp.Value
             match key with
             | "name" -> append $"jobName {StringLiteral value}"
+            | "needs" ->
+                match value with
+                | :? string as s -> append $"needs {StringLiteral s}"
+                | :? seq<obj> as items ->
+                    for item in items do
+                        append $"needs {StringLiteral item}"
+                | _ -> failwithf $"Unexpected value type for 'needs' in job \"{name}\"."
             | "strategy" -> append <| $"strategy{SerializeStrategy value}"
             | "runs-on" -> append $"runsOn {StringLiteral value}"
             | "timeout-minutes" -> append $"jobTimeout {value}"
