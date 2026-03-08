@@ -15,8 +15,23 @@ let private printUsage() =
     regenerate <file-name.fsx> - generate Generaptor script from .github/workflows subdirectory of the current directory
 """.ReplaceLineEndings "\n")
 
+let private findRepositoryRoot() =
+    let mutable current = Directory.GetCurrentDirectory()
+    let mutable found = None
+
+    while found.IsNone && not (isNull current) do
+        if Directory.Exists(Path.Combine(current, ".git")) then
+            found <- Some current
+        else
+            current <- Directory.GetParent(current) |> Option.ofObj |> Option.map _.FullName |> Option.toObj
+
+    defaultArg found (Directory.GetCurrentDirectory())
+
+let private workflowDirectory() =
+    LocalPath(Path.Combine(findRepositoryRoot(), ".github", "workflows"))
+
 let private generateWorkflows(workflows: Workflow seq): Task =
-    let dir = LocalPath ".github/workflows"
+    let dir = workflowDirectory()
     let actionsClient = ActionsClient()
     task {
         for wf in workflows do
@@ -27,7 +42,7 @@ let private generateWorkflows(workflows: Workflow seq): Task =
     }
 
 let private regenerate(fileName: LocalPath) =
-    let dir = LocalPath(Path.Combine(".github", "workflows"))
+    let dir = workflowDirectory()
     let script = ScriptGenerator.GenerateFrom dir
     File.WriteAllText(fileName.Value, script)
 
@@ -42,7 +57,7 @@ module ExitCodes =
 let private Verify workflows =
     (task {
         let actionsClient = ActionsClient()
-        let dir = LocalPath ".github/workflows"
+        let dir = workflowDirectory()
         let! result = Verifier.VerifyWorkflows(dir, workflows, actionsClient)
         for error in result.Errors do
             eprintfn $"%s{error}"
