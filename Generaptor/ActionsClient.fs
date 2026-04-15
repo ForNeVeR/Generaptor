@@ -61,7 +61,7 @@ type ActionsClient() =
         member this.GetLastActionVersion(ownerAndName) =
             let client = GitHubClient(ProductHeaderValue("generaptor"))
             let owner, name =
-                match ownerAndName.Split '/' with
+                match ownerAndName.Split '/' |> Array.truncate 2 with
                 | [| o; n |] -> o, n
                 | _ -> failwithf $"Invalid repository owner/name: {ownerAndName}."
             task {
