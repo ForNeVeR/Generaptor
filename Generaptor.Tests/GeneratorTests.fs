@@ -47,7 +47,7 @@ jobs:
     doTest expected wf
 
 [<Fact>]
-let ``Condition tests``(): unit =
+let ``Condition tests: job.{job_id}.steps[*].if``(): unit =
     let wf = workflow("wf") [|
         onPushTo "main"
         job "main" [|
@@ -67,6 +67,29 @@ jobs:
     - uses: aaa
     - if: goes here
       uses: bbb
+"""
+    doTest expected wf
+
+[<Fact>]
+let ``Condition tests: job.{job_id}.if``(): unit =
+    let wf = workflow("wf") [|
+        onPushTo "main"
+        job "main" [|
+            condition "goes here"
+            runsOn "ubuntu-latest"
+            step(uses = "aaa")
+        |]
+    |]
+    let expected = """on:
+  push:
+    branches:
+    - main
+jobs:
+  main:
+    if: goes here
+    runs-on: ubuntu-latest
+    steps:
+    - uses: aaa
 """
     doTest expected wf
 
