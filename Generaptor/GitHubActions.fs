@@ -62,6 +62,7 @@ type JobEnvironment ={
 
 type Job = {
     Id: string
+    Condition: string option
     Name: string option
     Permissions: Map<PermissionKind, AccessKind>
     Needs: ImmutableArray<string>
@@ -101,6 +102,7 @@ type Workflow = {
 
 type JobCreationCommand =
     | Name of string
+    | AddCondition of string
     | AddJobPermission of PermissionKind * AccessKind
     | Needs of string
     | RunsOn of string
@@ -141,6 +143,7 @@ let private createJob id commands =
     let mutable job = {
         Id = id
         Name = None
+        Condition = None
         Strategy = None
         Permissions = Map.empty
         Needs = ImmutableArray.Empty
@@ -154,6 +157,7 @@ let private createJob id commands =
         job <-
             match command with
             | Name n -> { job with Name = Some n }
+            | AddCondition c -> { job with Condition = Some c }
             | AddJobPermission(p, a) -> { job with Permissions = Map.add p a job.Permissions }
             | Needs needs -> { job with Needs = job.Needs.Add needs }
             | RunsOn runsOn -> { job with RunsOn = Some runsOn }
@@ -234,6 +238,8 @@ type Commands =
         RunsOn image
     static member jobTimeout(timeoutMin: int): JobCreationCommand =
         TimeoutMin timeoutMin
+    static member condition(condition: string): JobCreationCommand =
+        AddCondition condition
 
     /// https://docs.github.com/en/actions/reference/workflows-and-actions/workflow-syntax#jobsjob_idenvironment
     static member environment(name: string, url: string): JobCreationCommand =

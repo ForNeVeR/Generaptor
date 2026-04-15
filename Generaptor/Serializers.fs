@@ -124,6 +124,7 @@ let private convertJobBody(job: Job, existingVersions, client) =
     match job.Name with
     | None -> ()
     | Some n -> map.Add("name", n)
+    job.Condition |> Option.iter(fun c -> map.Add("if", c))
     job.Environment |> Option.iter(fun e -> map.Add("environment", convertEnvironment e))
     match job.Strategy with
     | None -> ()
@@ -221,7 +222,7 @@ let private validateWorkflow(wf: Workflow): unit =
 
 let internal Stringify(wf: Workflow) (existingVersions: Map<string, ActionVersion>) (client: IActionsClient): string =
     validateWorkflow wf
-    
+
     let serializer =
         SerializerBuilder()
             .DisableAliases()
