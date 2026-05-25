@@ -100,7 +100,7 @@ If you want to start using Generaptor in a project with pre-existing CI pipeline
 1. Create a new file `scripts/github-actions.fsx` (or at any other directory of your preference).
 2. Write the following code in it:
    ```fsharp
-   #r "nuget: Generaptor, 1.11.0"
+   #r "nuget: Generaptor, 1.12.0"
    open Generaptor
    exit <| EntryPoint.Process fsi.CommandLineArgs []
    ```
@@ -136,7 +136,7 @@ $ dotnet fsi github-actions.fsx [optional parameters may go here]
 
 The script file example:
 ```fsharp
-#r "nuget: Generaptor.Library, 1.1.0"
+#r "nuget: Generaptor.Library, 1.12.0"
 open System
 
 open Generaptor
