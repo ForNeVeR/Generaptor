@@ -1,5 +1,5 @@
 <!--
-SPDX-FileCopyrightText: 2024-2025 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
+SPDX-FileCopyrightText: 2024-2026 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
 
 SPDX-License-Identifier: MIT
 -->
@@ -95,9 +95,23 @@ jobs:
 
 How to Use
 ----------
+### Quick Start
+If you want to start using Generaptor in a project with pre-existing CI pipeline, follow these steps.
+1. Create a new file `scripts/github-actions.fsx` (or at any other directory of your preference).
+2. Write the following code in it:
+   ```fsharp
+   #r "nuget: Generaptor, 1.11.0"
+   open Generaptor
+   exit <| EntryPoint.Process fsi.CommandLineArgs []
+   ```
+3. Run `dotnet fsi scripts/github-actions.fsx regenerate scripts/github-actions.fsx` — this will read your CI definitions from `./github/workflows` and fill the script file with the instructions to regenerate them.
+
+After that, modify the script and see how it updates the CI pipeline definition in the `.github` folder. See the instructions below.
+
+### Reference
 We recommend two main modes of execution for Generaptor: from a .NET project and from a script file.
 
-### .NET Project
+#### .NET Project
 This integration is useful if you already have a solution file, and it's more convenient for you to have your infrastructure in a new project in that solution. Follow this instruction.
 
 1. Create a new F# project in your solution. The location doesn't matter, but we recommend calling it `GitHubActions` and put inside the `Infrastructure` solution folder, to not mix it with the main code.
@@ -111,7 +125,7 @@ This integration is useful if you already have a solution file, and it's more co
 
    See the **Command-Line Arguments** section for more details.
 
-### Script File
+#### Script File
 As an alternative execution mode, we also support execution from an F# script file.
 
 Put your code (see an example below) into an `.fsx` file (say, `github-actions.fsx`), and run it with the following shell command:
@@ -155,13 +169,13 @@ let workflows = [
 exit <| EntryPoint.Process fsi.CommandLineArgs workflows
 ```
 
-### Command-Line Arguments
+#### Command-Line Arguments
 Generaptor supports the following command-line arguments:
 - no arguments or `generate` — (re-)generate the workflow files in the `.github/workflows` folder, relatively to the current directory;
 - `verify` — read the current workflows form `.github/workflows` and compare them with the script contents. If any are different, print diagnostic message and exit with non-zero exit code.
 - `regenerate [path to fsx file]` — generate the `.fsx` script file from the `.yml` workflows in the repository (the `.github/workflows` folder, relative to the current directory).
 
-### Automatic Version Extraction
+#### Automatic Version Extraction
 For cases when you manage your action versions separately (using tools like Dependabot or Renovate), you can set up Generaptor to read the action versions from your YAML definitions. This way, it will read the versions, then regenerate the file, and apply the versions read previously — thus preserving the flow you have with external tools.
 
 To use it, define steps using the `Auto` notation:
@@ -182,14 +196,14 @@ let workflows = [
 
 It supports version tags in form of `[v]X[.Y[.Z]]`, where X, Y, and Z are numbers.
 
-### Library Features
+#### Library Features
 For basic GitHub Action support (workflow and step DSL), see [the `GitHubActions.fs` file][api.github-actions]. The basic actions are in the main **Generaptor** package.
 
 For advanced patterns and action commands ready for use, see [Actions][api.library-actions] and [Patterns][api.library-patterns] files. These are in the auxiliary **Generaptor.Library** package.
 
 Feel free to create your own actions and patterns, and either send a PR to this repository, or publish your own NuGet packages!
 
-### GitHub Actions Usage
+#### GitHub Actions Usage
 Example usage to set up script verification on CI:
 ```fsharp
 job "verify-workflows" [
@@ -210,7 +224,7 @@ job "verify-workflows" [
 ]
 ```
 
-### Renovate
+#### Renovate
 If you use [Renovate][renovate], set up the auto-update with this snippet in `renovate.json`:
 ```json
 {
