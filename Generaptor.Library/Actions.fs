@@ -47,10 +47,14 @@ type Actions =
         )
 
     static member createRelease(name: string, releaseNotesPath: string, files: string seq, ?actionVersion: string): JobCreationCommand =
-        let version = defaultArg actionVersion "v2"
+        let uses, usesSpec =
+            match actionVersion with
+            | None -> None, Some <| Auto "softprops/action-gh-release"
+            | Some version -> Some $"softprops/action-gh-release@{version}", None
         step(
             name = "Create a release",
-            uses = $"softprops/action-gh-release@{version}",
+            ?uses = uses,
+            ?usesSpec = usesSpec,
             options = Map.ofList [
                 "name", name
                 "body_path", releaseNotesPath
