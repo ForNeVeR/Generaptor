@@ -256,6 +256,7 @@ let private SerializeJobs(jobs: obj): string =
             let value = kvp.Value
             match key with
             | "name" -> append $"jobName {StringLiteral value}"
+            | "if" -> append $"condition {StringLiteral value}"
             | "needs" ->
                 match value with
                 | :? string as s -> append $"needs {StringLiteral s}"
