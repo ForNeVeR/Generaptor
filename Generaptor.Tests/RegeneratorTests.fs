@@ -257,6 +257,20 @@ jobs:
     DoTest files
 
 [<Fact>]
+let JobConditionGenerator(): Task =
+    let files = [
+        "1.yml", """
+jobs:
+  main:
+    if: startsWith(github.ref, 'refs/tags/v')
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+"""
+    ]
+    DoTest files
+
+[<Fact>]
 let NeedsGenerator(): Task =
     let files = [
         "1.yml", """
