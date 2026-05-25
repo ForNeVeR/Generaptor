@@ -1,4 +1,4 @@
-// SPDX-FileCopyrightText: 2024-2026 Friedrich von Never <friedrich@fornever.me>
+// SPDX-FileCopyrightText: 2024-2026 Generaptor contributors <https://github.com/ForNeVeR/Generaptor>
 //
 // SPDX-License-Identifier: MIT
 
