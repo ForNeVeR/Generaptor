@@ -30,7 +30,7 @@ jobs:
       DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v5
       with:
@@ -52,7 +52,7 @@ jobs:
       DOTNET_NOLOGO: 1
       NUGET_PACKAGES: ${{ github.workspace }}/.github/nuget-packages
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: actions/setup-dotnet@v5
     - uses: actions/cache@v5
       with:
@@ -62,11 +62,11 @@ jobs:
   licenses:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - uses: fsfe/reuse-action@v6
   encodings:
     runs-on: ubuntu-24.04
     steps:
-    - uses: actions/checkout@v6
+    - uses: actions/checkout@v7
     - shell: pwsh
       run: Install-Module VerifyEncoding -Repository PSGallery -RequiredVersion 2.2.0 -Force && Test-Encoding
