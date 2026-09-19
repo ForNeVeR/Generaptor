@@ -46,7 +46,7 @@ jobs:
       run: dotnet test --filter Category!=SkipOnCI
       timeout-minutes: 10
   verify-workflows:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     env:
       DOTNET_CLI_TELEMETRY_OPTOUT: 1
       DOTNET_NOLOGO: 1
@@ -60,12 +60,12 @@ jobs:
         path: ${{ env.NUGET_PACKAGES }}
     - run: dotnet run --project Infrastructure/GitHubActions -- verify
   licenses:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v7
     - uses: fsfe/reuse-action@v6
   encodings:
-    runs-on: ubuntu-24.04
+    runs-on: ubuntu-26.04
     steps:
     - uses: actions/checkout@v7
     - shell: pwsh
