@@ -34,7 +34,7 @@ jobs:
     - name: Set up .NET SDK
       uses: actions/setup-dotnet@v6
       with:
-        dotnet-version: 8.0.x
+        dotnet-version: 10.0.x
     - name: NuGet cache
       uses: actions/cache@v6
       with:
